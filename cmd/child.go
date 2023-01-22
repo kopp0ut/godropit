@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 PWSK info@pwsk.uk
 */
 package cmd
 
@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/Epictetus24/godropit/internal/gengo"
+
 	"github.com/spf13/cobra"
 )
 
@@ -37,6 +38,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	childCmd.Flags().StringVarP(&proc, "proc", "p", "c:\\windows\\system32\\werfault.exe", "Child Process to execute in.")
+	childCmd.Flags().StringVarP(&proc, "proc", "p", "c:\\\\windows\\\\system32\\\\werfault.exe", "Child Process to execute in.")
 	childCmd.Flags().StringVar(&procArgs, "args", "args", "Arguments to pass child proc, embed in quotes or escape spaces pls.")
 }

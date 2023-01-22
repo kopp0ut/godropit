@@ -29,7 +29,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/Epictetus24/godropit/pkg/box"
+	"github.com/salukikit/go-util/pkg/box"
 
 	// Sub Repositories
 

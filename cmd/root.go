@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 Phil Wilson-Smith-Kopp pkopp@nettitude.com
+Copyright © 2023 PWSK info@pwsk.uk
 */
 package cmd
 

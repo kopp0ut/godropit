@@ -1,26 +1,27 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 PWSK info@pwsk.uk
 */
 package cmd
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/Epictetus24/godropit/internal/gengo"
 	"github.com/spf13/cobra"
 )
+
+var loop bool
 
 // localCmd represents the local command
 var localCmd = &cobra.Command{
 	Use:   "local",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Execute in the local process",
+	Long:  `Executes in the local process, if running as an exe I'd recommend using -loop to hold the process open indefinitely.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("local called")
+		if input == "" {
+			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
+		}
+		gengo.NewLocalDropper(input, output, domain, name, time, false, shared, arch, loop)
 	},
 }
 
@@ -35,5 +36,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	localCmd.Flags().BoolP("loop", "l", false, "Add a for loop to keep the process alive. Warning: Will potentially keep process alive even if shellcode fails.")
+	localCmd.Flags().BoolVarP(&loop, "loop", "l", false, "Add a for loop to keep the process alive. Warning: Will potentially keep process alive even if shellcode fails.")
 }

