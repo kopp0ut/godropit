@@ -32,7 +32,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-//{{.Init}}
+//{{.Init}}()
 
 func main() {
 	DoStuff()

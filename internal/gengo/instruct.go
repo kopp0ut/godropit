@@ -111,6 +111,19 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 	//setup to use dll
 	if dll {
+		/*
+			//write dll file
+			dllHeader := "dllmain.c"
+			dllHeaderFile, err := os.Create(dllHeader)
+			if err != nil {
+				log.Fatalf("Error creating dropper file: %v ", err)
+			}
+
+			dllHeaderFile.WriteString(delivery.DllProcAttach)
+
+			dllHeaderFile.Close()
+		*/
+
 		command = []string{"build", "-o", outname + ".dll", "-trimpath", "-buildmode=c-shared", `-ldflags="-w -s -H=windowsgui"`, fname}
 	} else {
 		command = []string{"build", "-o", outname + ".exe", "-trimpath", `-ldflags="-w -s -H=windowsgui"`, fname}

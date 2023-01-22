@@ -62,8 +62,9 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 
 	//setup to use dll
 	if dll {
+
 		outname = outname + ".dll"
-		command = []string{"build", "-o", outname, "-trimpath", "-buildmode=c-shared", `-ldflags=-w\ -s\ -H=windowsgui`, fname}
+		command = []string{"build", "-x", "-o", outname, "-trimpath", "-buildmode=c-shared", `-ldflags=-w -s -H=windowsgui`, fname}
 	} else {
 		outname = outname + ".exe"
 		command = []string{"build", "-o", outname, "-trimpath", `-ldflags=-w -s -H=windowsgui`, fname}

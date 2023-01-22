@@ -82,9 +82,18 @@ func NewRemoteDropper(input, output, domain, dropname, pid string, delay int, sg
 		log.Fatalf("Error creating dropper file: %v ", err)
 	}
 
-	err = goDrop.WriteSrc(dropperFile)
-	if err != nil {
-		log.Fatalf("Error writing dropper source: %v", err)
+	if dll {
+		err = goDrop.WriteSharedSrc(dropperFile)
+		if err != nil {
+			log.Fatalf("Error writing dropper source: %v", err)
+		}
+
+	} else {
+		err = goDrop.WriteSrc(dropperFile)
+		if err != nil {
+			log.Fatalf("Error writing dropper source: %v", err)
+		}
+
 	}
 	dropperFile.Close()
 	color.Green("Dropper src written to : %s\n", dropFilepath)

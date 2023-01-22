@@ -8,7 +8,7 @@ func ChkDom() {
 
 	host, _ := os.Hostname()
 	dnsenv := os.Getenv("USERDNSDOMAIN")
-	if !strings.Contains(host, string(hope)) && !strings.Contains(dnsenv, string(hope)) {
+	if !strings.Contains(strings.ToLower(host), strings.ToLower(string(hope))) && !strings.Contains(strings.ToLower(dnsenv), strings.ToLower(string(hope))) {
 		time.Sleep(13 * time.Second)
 		os.Exit(0)
 	}

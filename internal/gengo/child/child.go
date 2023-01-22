@@ -5,6 +5,7 @@ import (
 	"log"
 	"text/template"
 
+	"github.com/Epictetus24/godropit/internal/gengo/delivery"
 	"github.com/Epictetus24/godropit/pkg/dropfmt"
 )
 
@@ -27,6 +28,8 @@ type ChildDropper struct {
 	Domain     string
 	Import     string
 	C          string
+	ProcAttach string
+	Init       string
 }
 
 var FuncName = "checkData"
@@ -34,9 +37,11 @@ var Export = "export"
 
 const ChildMain = `package main
 
+{{.C}}
+
 import (
 	{{.Import}}
-	{{.C}}
+
 	{{.BoxChkImp}}
 
 )
@@ -46,6 +51,7 @@ var hope = "{{.Domain}}"
 
 func init() {
 	{{.ChkBox}}	
+	{{.Init}}()
 }
 func main() {
 
@@ -83,7 +89,6 @@ func (cd *ChildDropper) WriteSrc(writer io.Writer) error {
 	cd.FuncName = FuncName
 	cd.Export = ""
 	cd.C = ""
-
 	err = tmpl.Execute(writer, cd)
 	return nil
 
@@ -94,9 +99,11 @@ func (cd *ChildDropper) WriteSharedSrc(writer io.Writer) error {
 	if err != nil {
 		return err
 	}
-	cd.C = `"C"`
+	cd.C = delivery.DllImport
+	cd.ProcAttach = delivery.DllFunc
 	cd.FuncName = FuncName
 	cd.Export = Export
+	cd.Init = cd.FuncName
 	err = tmpl.Execute(writer, cd)
 	return nil
 

