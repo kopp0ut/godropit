@@ -5,14 +5,23 @@ import "C"
 `
 
 const DllFunc = `
-//export VoidFunc
-func VoidFunc() { checkData() }
+//export cd.Init = cd.FuncName + "()"
+func cd.Init = cd.FuncName + "()"() { checkData() }
+
+// DllInstall is used when executing the Merlin agent with regsvr32.exe (i.e. regsvr32.exe /s /n /i merlin.dll)
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb759846(v=vs.85).aspx
 
 //export DllInstall
 func DllInstall() { checkData() }
 
+// DllRegisterServer is used when executing the Merlin agent with regsvr32.exe (i.e. regsvr32.exe /s merlin.dll)
+// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682162(v=vs.85).aspx
+
 //export DllRegisterServer
 func DllRegisterServer() { checkData() }
+
+// DllUnregisterServer is used when executing the Merlin agent with regsvr32.exe (i.e. regsvr32.exe /s /u merlin.dll)
+// https://msdn.microsoft.com/en-us/library/windows/desktop/ms691457(v=vs.85).aspx
 
 //export DllUnregisterServer
 func DllUnregisterServer() { checkData() }
@@ -25,6 +34,10 @@ func xlAutoRegister() { checkData() }
 
 //export xlAutoRegister12
 func xlAutoRegister12() { checkData() }
+`
+
+const Xll = `
+
 `
 
 const DllProcAttach = `#include <windows.h>

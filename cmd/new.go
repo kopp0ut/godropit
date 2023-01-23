@@ -40,14 +40,14 @@ func init() {
 	// and all subcommands, e.g.:
 	newCmd.PersistentFlags().StringVarP(&input, "in", "i", "", "input file, shellcode.bin or exe.")
 	newCmd.MarkFlagRequired("in")
-	newCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "droppername, don't include file extension.")
+	newCmd.PersistentFlags().StringVarP(&name, "name", "n", "godropit", "droppername, don't include file extension.")
 	newCmd.MarkFlagRequired("name")
 	newCmd.PersistentFlags().StringVarP(&output, "out", "o", "", "output directory for your generated files.")
 	newCmd.MarkFlagRequired("out")
-	newCmd.PersistentFlags().IntVarP(&time, "time", "t", 10, "delay in seconds before decryption and execution of shellcode.")
+	newCmd.PersistentFlags().IntVarP(&time, "time", "t", 1, "delay in seconds before decryption and execution of shellcode.")
 	newCmd.PersistentFlags().StringVarP(&domain, "domain", "d", "", "")
 	newCmd.PersistentFlags().BoolVarP(&shared, "shared", "s", false, "Export dropper as DLL. Default is false")
-	newCmd.PersistentFlags().BoolVar(&arch, "x86", false, "Attempts to generate an x86 dropper, completely untested. Use at own risk.")
+	newCmd.PersistentFlags().BoolVar(&arch, "32", false, "Attempts to generate an x86 dropper, completely untested. Use at own risk.")
 	//newCmd.PersistentFlags().BoolVar(&sgn, "SGN", false, "Uses nextgen shikata ga nai to encode the shellcode.")
 
 	// Cobra supports local flags which will only run when this command

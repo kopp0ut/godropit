@@ -22,8 +22,8 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 	}
 
 	fmt.Printf("Shellcode files are now in %s.\n", outdir)
-	fmt.Println("Using /usr/local/go/bin/go for go executable.")
-	goBinPath := "/usr/local/go/bin/go"
+	fmt.Println("Using go for executable. Ensure go is in your PATH.")
+	goBinPath := "go"
 
 	if err != nil {
 		log.Fatalf("Error getting working dir %v.\n", err)

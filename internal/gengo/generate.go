@@ -31,9 +31,7 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 		log.Fatalf("Error changing to output dir %v.\n", err)
 	}
 
-	fmt.Printf("Shellcode files are now in %s.\n", outdir)
-	fmt.Println("Using /usr/local/go/bin/go for go executable.")
-	goBinPath := "/usr/local/go/bin/go"
+	goBinPath := "go"
 
 	if err != nil {
 		log.Fatalf("Error getting working dir %v.\n", err)
@@ -53,7 +51,7 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 		fmt.Sprintf("GOMODCACHE=%s", ReadEnv("GOMODCACHE")),
 		fmt.Sprintf("GOPRIVATE=%s", ""),
 		fmt.Sprintf("PATH=%s:%s", path.Join(ReadEnv("GOVERSION"), "bin"), os.Getenv("PATH")),
-		fmt.Sprintf("GOPATH=%s", ReadEnv("GOPATH")),
+		fmt.Sprintf("GOPATH=%s:%s", ReadEnv("GOPATH"), outdir),
 	}
 
 	var out bytes.Buffer

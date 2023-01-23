@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 PWSK info@pwsk.uk
+Copyright © 2023 Phil Kopp
 */
 package cmd
 
@@ -27,6 +27,10 @@ var localCmd = &cobra.Command{
 
 func init() {
 	newCmd.AddCommand(localCmd)
+
+	localCmd.MarkFlagRequired("in")
+	localCmd.MarkFlagRequired("name")
+	localCmd.MarkFlagRequired("out")
 
 	// Here you will define your flags and configuration settings.
 

@@ -32,6 +32,10 @@ func init() {
 
 	// Here you will define your flags and configuration settings.
 
+	childCmd.MarkFlagRequired("in")
+	childCmd.MarkFlagRequired("name")
+	childCmd.MarkFlagRequired("out")
+
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// localCmd.PersistentFlags().String("foo", "", "A help for foo")
