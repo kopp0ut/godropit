@@ -4,15 +4,15 @@ const EarlyBirdImports = `
 
 	"fmt"
 	"log"
-	"os"
+	
 	"syscall"
-	"time"
+	
 	"unsafe"
 	
 
 	//Sub Repositories
 	"golang.org/x/sys/windows"
-	"github.com/salukikit/go-util/pkg/box"
+	
 
 `
 

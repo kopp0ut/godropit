@@ -11,6 +11,7 @@ sudo apt update && sudo apt install golang mingw-w64
 git clone https://gitlab.alphaweasel.com/rt/purple-teaming/godropit
 ```
 
+
 ## Usage
 Once downloaded it's fairly simple, you can either compile the binary and run it that way, or use it with "go run". Right now it only accepts baked in templates, but it will output the src to "-o outputdir". This is where all the go source files will be placed, including encrypted shellcode, env variables used and go.mod/go.sum etc. 
 
@@ -18,6 +19,12 @@ Once downloaded it's fairly simple, you can either compile the binary and run it
 .\godropit new <local|child|remote> -i <exe/binfile> -n <outputfilename> -o <output directory>
 ```
 [![asciicast](https://asciinema.org/a/C6y3GDaCQEBZn6NXSWg6QrlPx.svg)](https://asciinema.org/a/C6y3GDaCQEBZn6NXSWg6QrlPx)
+
+## Supported Functionality
+* Domain keying
+* Local, remote and child process execution methods.
+* Automatic AES shellcode encryption
+* 
 
 ## Tips
 
@@ -42,3 +49,7 @@ There are plans to support more, but I suggest you write your own bespoke payloa
 * Support for using [garble](https://github.com/burrowers/garble) against your binary when you are done.
 * Support for custom exports in dlls.
 * Better string and import obfuscation, e.g. using []byte or encryption rather than plain strings.
+* LocalKCT execution (some implemented) - https://github.com/aahmad097/AlternativeShellcodeExec
+* PPID Spoofing
+* ProcByName
+* Custom Export names

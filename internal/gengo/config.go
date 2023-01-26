@@ -10,8 +10,6 @@ import (
 	"github.com/fatih/color"
 )
 
-var Leet bool
-
 func check(name string) string {
 	if strings.Contains(name, "hunter2") {
 		strings.ReplaceAll(name, "hunter2", "")

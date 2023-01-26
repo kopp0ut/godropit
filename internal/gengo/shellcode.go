@@ -3,13 +3,39 @@ package gengo
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/Binject/go-donut/donut"
 	"github.com/Epictetus24/godropit/pkg/dropfmt"
 	"github.com/fatih/color"
 )
+
+func writeShellcodeFiles(BufStr, KeyStr, output, dropname string, shellcode []byte) {
+
+	scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")
+
+	//Write shellcode files in case they are needed later.
+	scFile, err := os.Create(scFilepath)
+	if err != nil {
+		log.Fatalf("Error creating shellcode file: %v ", err)
+
+	}
+	scFile.WriteString("ShellcodeKey: " + KeyStr + "\n")
+	scFile.WriteString("ShellcodeBuf:\n" + BufStr)
+	scFile.Close()
+	binFilepath := filepath.Join(output, dropname+"_Clear.bin")
+	fmt.Println(binFilepath)
+	binFile, err := os.Create(binFilepath)
+	if err != nil {
+		log.Fatalf("Error creating shellcode file: %v ", err)
+
+	}
+	binFile.Write(shellcode)
+	binFile.Close()
+}
 
 // Uses donut to generate 64bit shellcode from an exe.
 func DonutShellcode(srcFile string, x86 bool) ([]byte, error) {

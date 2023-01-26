@@ -11,15 +11,17 @@ import (
 type DropFmt struct {
 	Buf    []byte //
 	EncBuf []byte
+	DecBuf []byte
 	Key    []byte
 }
 
-// base64's encrypted string
+// Convert .EncBuf to base64
 func (d *DropFmt) ToB64() string {
 	return base64.StdEncoding.EncodeToString(d.EncBuf)
 
 }
 
+// Convert .Key to base64 string
 func (d *DropFmt) KeyB64() string {
 	return base64.StdEncoding.EncodeToString(d.Key)
 
@@ -48,7 +50,7 @@ func (d *DropFmt) SGN(arch int) error {
 }
 */
 // Encrypt Buf with AES to EncBuf
-func (d *DropFmt) AESEncrypt() (string, string, error) {
+func (d *DropFmt) AESEncrypt() (string, error) {
 	var err error
 
 	if d.Key == nil {
@@ -56,6 +58,19 @@ func (d *DropFmt) AESEncrypt() (string, string, error) {
 	}
 
 	d.EncBuf, err = enc.AESCBCEncrypt(d.Key, d.Buf)
+	if err != nil {
+		return "", err
+	}
+
+	encstr := base64.StdEncoding.EncodeToString(d.DecBuf)
+	return encstr, nil
+
+}
+
+func (d *DropFmt) AESDecrypt() (string, string, error) {
+	var err error
+
+	d.DecBuf, err = enc.AESCBCDecrypt(d.Key, d.Buf)
 	if err != nil {
 		return "", "", err
 	}

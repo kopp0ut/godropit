@@ -13,13 +13,13 @@ kernel32 := windows.NewLazySystemDLL("kernel32.dll")
 	
 `
 const NtQueueAPCThreadExLocalImports = `
-"fmt"
+	"fmt"
 	"log"
-	"os"
-	"time"
+	
+	
 	"unsafe"
 
-	"github.com/salukikit/go-util/pkg/box"
+	
 
 	// Sub Repositories
 

