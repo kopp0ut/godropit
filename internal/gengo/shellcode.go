@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"godropit/pkg/dropfmt"
+
 	"github.com/Binject/go-donut/donut"
-	"github.com/Epictetus24/godropit/pkg/dropfmt"
 	"github.com/fatih/color"
 )
 
@@ -26,7 +27,7 @@ func writeShellcodeFiles(BufStr, KeyStr, output, dropname string, shellcode []by
 	scFile.WriteString("ShellcodeKey: " + KeyStr + "\n")
 	scFile.WriteString("ShellcodeBuf:\n" + BufStr)
 	scFile.Close()
-	binFilepath := filepath.Join(output, dropname+"_Clear.bin")
+	binFilepath := filepath.Join(output, dropname+"_Raw.bin")
 	fmt.Println(binFilepath)
 	binFile, err := os.Create(binFilepath)
 	if err != nil {

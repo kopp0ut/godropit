@@ -1,10 +1,10 @@
 package local
 
 import (
-	"github.com/Epictetus24/godropit/pkg/dropfmt"
+	"godropit/pkg/dropfmt"
 )
 
-var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA", "[HeavensGate] BananaPhone", "[Callback] EnumerateChildWindows", "[Callback] EnumerateLoadedModules", "[Callback] CreateThreadPoolWait"}
+var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA", "[HellsGate] BananaPhone", "[Callback] EnumerateChildWindows", "[Callback] EnumerateLoadedModules", "[Callback] CreateThreadPoolWait"}
 
 var Hold = `
 	for {
@@ -21,7 +21,7 @@ func SelectLocal() (Dlls, Inject, Import, Extra string) {
 		Inject = CreateFiber
 		Import = CreateFiberImports
 	case "CreateThread":
-		Dlls = ""
+		Dlls = CreateThread
 		Inject = CreateThread
 		Import = CreateThreadImports
 	case "CreateThreadNative":
@@ -46,11 +46,12 @@ func SelectLocal() (Dlls, Inject, Import, Extra string) {
 		Inject = UUIDFromStringA
 		Import = UUIDFromStringAImports
 		Extra = UUIDFromStringAExtra
+
 	case "[HellsGate] BananaPhone":
-		Dlls = ""
-		Inject = bananaPhone
-		Import = bananaPhoneImports
-		Extra = bananaPhoneExtra
+		Dlls = BananaPhoneDlls
+		Inject = BananaPhone
+		Import = BananaPhoneImports
+		Extra = BananaPhoneExtra
 
 	case "[Callback] EnumerateChildWindows":
 		Dlls = EnumChildWindowsDlls
@@ -68,7 +69,7 @@ func SelectLocal() (Dlls, Inject, Import, Extra string) {
 		Dlls = CreateThreadPoolWaitDlls
 		Inject = CreateThreadPoolWait
 		Import = CreateThreadPoolWaitImports
-		Extra = ""
+		Extra = "//notreq"
 
 	}
 

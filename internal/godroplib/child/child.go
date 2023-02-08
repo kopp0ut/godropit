@@ -1,7 +1,7 @@
 package child
 
 import (
-	"github.com/Epictetus24/godropit/pkg/dropfmt"
+	"godropit/pkg/dropfmt"
 )
 
 var Droppers = []string{"CreateProcess", "CreateProcessWithPipe", "EarlyBird"}

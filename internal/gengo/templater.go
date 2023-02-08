@@ -5,7 +5,7 @@ import (
 	"io"
 	"text/template"
 
-	"github.com/Epictetus24/godropit/pkg/delivery"
+	"godropit/pkg/delivery"
 )
 
 // Contains all the elements necessary for an exe

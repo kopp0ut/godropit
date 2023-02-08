@@ -6,7 +6,8 @@ package cmd
 import (
 	"log"
 
-	"github.com/Epictetus24/godropit/internal/gengo"
+	"godropit/internal/gengo"
+
 	"github.com/spf13/cobra"
 )
 

@@ -6,11 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Epictetus24/godropit/internal/godroplib/child"
-	"github.com/Epictetus24/godropit/internal/godroplib/local"
-	"github.com/Epictetus24/godropit/internal/godroplib/remote"
-	"github.com/Epictetus24/godropit/pkg/box"
-	"github.com/Epictetus24/godropit/pkg/dropfmt"
+	"godropit/internal/godroplib/child"
+	"godropit/internal/godroplib/local"
+	"godropit/internal/godroplib/remote"
+	"godropit/pkg/box"
+	"godropit/pkg/dropfmt"
+
 	"github.com/fatih/color"
 )
 
@@ -65,10 +66,10 @@ func NewLocalDropper(input, output, domain, dropname string, delay int, sgn, dll
 	if hold {
 		localDrop.Hold = local.Hold
 	} else {
-		localDrop.Hold = ""
+		localDrop.Hold = "//notreq"
 	}
 
-	localDrop.Dtype = ""
+	localDrop.Dtype = "//notreq"
 
 	newDropper(localDrop, dropname, domain, input, output, sgn)
 }
@@ -141,7 +142,7 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 		log.Fatalf("Error writing dropper source:\n%v\n", err)
 	}
 	dropperFile.Close()
-	color.Green("Dropper src written to : %s\n", dropFilepath)
+	color.Green("Dropper src written to: %s\n", dropFilepath)
 
 	err = buildInstruct(output, dropfilename, goDrop.Shared, goDrop.Arch)
 	if err != nil {
@@ -152,7 +153,6 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 	wd, _ := os.Getwd()
 
 	if Leet {
-		//buildFileGo(output, dropname, dll, arch)
 
 	}
 

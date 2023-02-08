@@ -35,8 +35,7 @@ type DtypeRemote struct {
 	Args       string
 }
 
-const DropperMain = `
-package main
+const DropperMain = `package main
 
 {{.C}}
 
@@ -146,5 +145,6 @@ const dtypeRemote = `
 	}
 	`
 const dtypeChild = `
-
+	program := "{{.ChildProc}}"
+	args := "{{.Args}}"
 `
