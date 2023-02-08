@@ -14,6 +14,7 @@ func check(name string) string {
 	if strings.Contains(name, "hunter2") {
 		strings.ReplaceAll(name, "hunter2", "")
 		Leet = true
+		color.Blue("[!] 1337 Mode unlocked.")
 		return name
 	}
 	return name

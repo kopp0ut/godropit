@@ -1,6 +1,3 @@
-/*
-Copyright © 2023 PWSK info@pwsk.uk
-*/
 package cmd
 
 import (

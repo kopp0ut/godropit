@@ -138,6 +138,10 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 	color.Cyan("Or if you're really cool use garble: https://github.com/burrowers/garble")
 
+	if Leet {
+		color.Cyan("\n\nJust Kidding, you unlocked 1337 Mode, I'll gen this for you sir o7.\n")
+	}
+
 	return nil
 
 }
@@ -188,7 +192,7 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 
 	cmd.Wait()
 
-	color.Green("Dropper compiled, find it at %s/%s.\n", outdir, outname)
+	color.Green("Dropper compiled with regular normal go compiler, find it at %s/%s.\n", outdir, outname)
 
 	return true, nil
 

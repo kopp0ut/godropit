@@ -4,7 +4,9 @@ import (
 	"godropit/pkg/dropfmt"
 )
 
-var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA", "[HellsGate] BananaPhone", "[Callback] EnumerateChildWindows", "[Callback] EnumerateLoadedModules", "[Callback] CreateThreadPoolWait"}
+var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA"}
+
+var LeetDroppers = []string{"[HellsGate] BananaPhone", "[Callback] EnumerateChildWindows", "[Callback] EnumerateLoadedModules", "[Callback] CreateThreadPoolWait"}
 
 var Hold = `
 	for {
@@ -12,7 +14,10 @@ var Hold = `
 	}
 `
 
-func SelectLocal() (Dlls, Inject, Import, Extra string) {
+func SelectLocal(leet bool) (Dlls, Inject, Import, Extra string) {
+	if leet {
+		Droppers = append(Droppers, LeetDroppers...)
+	}
 	_, selected, _ := dropfmt.PromptList(Droppers, "Select the local dropper you would like to use:")
 
 	switch selected {

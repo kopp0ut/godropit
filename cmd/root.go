@@ -1,6 +1,3 @@
-/*
-Copyright © 2023 PWSK info@pwsk.uk
-*/
 package cmd
 
 import (
@@ -12,11 +9,11 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "godropit",
-	Short: "Quick and Dirty generator for golang droppers.",
+	Short: "Quick and low equity dropper generator.",
 	Long: `Use to generate golang droppers with encrypted shellcode.
 	For example a new child process dropper could be created with:
 
-
+	./godropit new child -i <shellcode.bin|evil.exe>
 	
 	`,
 	// Uncomment the following line if your bare application
