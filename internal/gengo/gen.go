@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"godropit/internal/godroplib/child"
 	"godropit/internal/godroplib/local"
@@ -80,7 +79,7 @@ func NewLocalDropper(input, output, domain, dropname string, delay int, sgn, dll
 }
 
 func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool) {
-	if Leet {
+	/*if Leet {
 		color.Cyan("Note: 1337 Droppers block nonms dlls from loading in the process.\nThis can sometimes break some payloads. Either modify or don't use 1337 mode.")
 		goDrop.LeetImp = LeetImports
 		goDrop.BlockNonMs = BlockNonMs
@@ -92,6 +91,10 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 		goDrop.MemCom = MemCom
 
 	}
+	*/
+	goDrop.LeetImp = " "
+	goDrop.BlockNonMs = " "
+	goDrop.MemCom = MemCom
 
 	var shellcode dropfmt.DropFmt
 
