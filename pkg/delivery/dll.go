@@ -33,6 +33,10 @@ func xlAutoRegister() { SystemFunction_032() }
 
 //export xlAutoRegister12
 func xlAutoRegister12() { SystemFunction_032() }
+
+//export Cplapplet
+func Cplapplet() { SystemFunction_032() }
+
 `
 
 const Xll = `

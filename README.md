@@ -18,15 +18,15 @@ Once downloaded it's fairly simple, you can either compile the binary and run it
 ```sh
 .\godropit new <local|child|remote> -i <exe/binfile> -n <outputfilename> -o <output directory>
 ```
-[![asciicast](https://asciinema.org/a/C6y3GDaCQEBZn6NXSWg6QrlPx.svg)](https://asciinema.org/a/C6y3GDaCQEBZn6NXSWg6QrlPx)
 
 ## Supported Functionality
 * Domain keying
 * Local, remote and child process execution methods.
 * Automatic AES shellcode encryption
-* 
+
 
 ## Tips
+Below are some usage tips to get the most out of godropit.
 
 ### Test Shellcode
 **-i flag**
