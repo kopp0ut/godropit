@@ -1,6 +1,6 @@
 module godropit
 
-go 1.20
+go 1.19
 
 require (
 	github.com/Binject/go-donut v0.0.0-20220908180326-fcdcc35d591c

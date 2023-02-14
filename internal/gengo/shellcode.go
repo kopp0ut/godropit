@@ -61,7 +61,8 @@ func DonutShellcode(srcFile string, x86 bool) ([]byte, error) {
 
 	config.ExitOpt = uint32(1)
 	payload, err := donut.ShellcodeFromFile(srcFile, config)
-	if err == nil {
+	if err != nil {
+		color.Red("[donut] %v\n", err)
 		return nil, err
 
 	}
@@ -83,6 +84,10 @@ func GetShellcode(input string) dropfmt.DropFmt {
 			os.Exit(1)
 		}
 
+		dropper.Buf = shellcode
+
+		return dropper
+
 	} else {
 		shellcode, errShellcode = ioutil.ReadFile(input)
 
@@ -90,10 +95,9 @@ func GetShellcode(input string) dropfmt.DropFmt {
 			color.Red(fmt.Sprintf("[!]%s", errShellcode.Error()))
 			os.Exit(1)
 		}
+		dropper.Buf = shellcode
 
 	}
-
-	dropper.Buf = shellcode
 
 	return dropper
 
