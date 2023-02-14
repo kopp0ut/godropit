@@ -8,7 +8,7 @@ To use gohide it you will need to install go, as we'll need the go compiler to c
 For Linux
 ```sh
 sudo apt update && sudo apt install golang mingw-w64
-git clone https://gitlab.alphaweasel.com/rt/purple-teaming/godropit
+git clone <THIS REPO>
 ```
 
 
