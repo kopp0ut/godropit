@@ -18,7 +18,3 @@ func PromptList(list []string, prompt string) (int, string, error) {
 	}
 	return choiceInt, choiceStr, nil
 }
-
-func PromptStr() {
-
-}

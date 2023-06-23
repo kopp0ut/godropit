@@ -9,8 +9,7 @@ const CreateRemoteThreadDlls = `
 	WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
 	CreateRemoteThreadEx := kernel32.NewProc("CreateRemoteThreadEx")
 
-	pHandle, errOpenProcess := windows.OpenProcess(windows.PROCESS_CREATE_THREAD|windows.PROCESS_VM_OPERATION|windows.PROCESS_VM_WRITE|windows.PROCESS_VM_READ|windows.PROCESS_QUERY_INFORMATION, false, uint32(pid))
-
+	
 `
 const CreateRemoteThreadImports = `
 	"fmt"

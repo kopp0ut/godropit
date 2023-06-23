@@ -26,7 +26,7 @@ func SelectLocal(leet bool) (Dlls, Inject, Import, Extra string) {
 		Inject = CreateFiber
 		Import = CreateFiberImports
 	case "CreateThread":
-		Dlls = CreateThread
+		Dlls = CreateThreadDlls
 		Inject = CreateThread
 		Import = CreateThreadImports
 	case "CreateThreadNative":

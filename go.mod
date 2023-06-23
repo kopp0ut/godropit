@@ -4,9 +4,10 @@ go 1.19
 
 require (
 	github.com/Binject/go-donut v0.0.0-20220908180326-fcdcc35d591c
+	github.com/DimitarPetrov/stegify v0.0.0-20200707150251-62518ca95261
+	github.com/epictetus24/go-util v0.0.0-20230313182008-7e5228325f58
 	github.com/fatih/color v1.14.1
 	github.com/manifoldco/promptui v0.9.0
-	github.com/salukikit/go-util v0.0.0-20230122190912-805209376bd3
 	github.com/spf13/cobra v1.6.1
 )
 

