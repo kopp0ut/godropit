@@ -23,6 +23,7 @@ var childCmd = &cobra.Command{
 		}
 
 		name = check(name)
+		gengo.Garble = garble
 		var childDrop gengo.Dropper
 		var Dtype gengo.DtypeChild
 		var err error

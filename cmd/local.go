@@ -26,7 +26,7 @@ var localCmd = &cobra.Command{
 		}
 
 		name = check(name)
-
+		gengo.Garble = garble
 		var localDrop gengo.Dropper
 		localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal(gengo.Leet)
 		localDrop.Delay = time

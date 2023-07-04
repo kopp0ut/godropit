@@ -10,15 +10,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func Check(name string) string {
-	if strings.Contains(name, "hunter2") {
-		name = strings.ReplaceAll(name, "hunter2", "")
-		Leet = true
-		color.Blue("[!] 1337 Mode unlocked.")
-		return name
-	}
-	return name
-}
+var Debug bool
 
 func GoGetEnv() {
 	cmd := exec.Command("go", "env")

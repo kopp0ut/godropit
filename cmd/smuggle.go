@@ -21,6 +21,9 @@ var smuggleCmd = &cobra.Command{
 		if input == "" {
 			log.Fatalln("Please pass the file you wish to smuggle with -i <smugglefile.txt>")
 		}
+		if debug {
+			gengo.Debug = true
+		}
 		gengo.NewSmuggler(name, input, output, stagerurl, imgpath, hostname, ua)
 	},
 }

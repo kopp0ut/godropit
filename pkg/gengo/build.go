@@ -12,16 +12,17 @@ import (
 	"github.com/fatih/color"
 )
 
-const (
-	goBinPath = "go"
-)
-
 var Env []string
 
 var Arch string
 
+var Garble bool
+
+var compilerBin string
+
 func init() {
 	GoGetEnv()
+
 	Env = []string{
 		fmt.Sprintf("CC=%s", ReadEnv("CC")),
 		fmt.Sprintf("CGO_ENABLED=%s", "0"),
@@ -30,11 +31,17 @@ func init() {
 		fmt.Sprintf("GOPRIVATE=%s", ReadEnv("GOPRIVATE")),
 		fmt.Sprintf("PATH=%s:%s", path.Join(ReadEnv("GOVERSION"), "bin"), os.Getenv("PATH")),
 		fmt.Sprintf("GOPATH=%s", ReadEnv("GOPATH")),
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 	}
 }
 
 func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
-	var command []string
+	if Garble {
+		compilerBin = "garble"
+	} else {
+		compilerBin = "go"
+	}
+
 	var err error
 
 	err = os.Chdir(outdir)
@@ -43,8 +50,6 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 	}
 
 	fmt.Printf("Shellcode files are now in %s.\n", outdir)
-	fmt.Println("Using go for executable. Ensure go is in your PATH.")
-	goBinPath := "go"
 
 	if err != nil {
 		log.Fatalf("Error getting working dir %v.\n", err)
@@ -71,9 +76,13 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 
-	outname := fmt.Sprintf("%s_%s", strings.ReplaceAll(fname, ".go", ""), Arch)
-
-	initCmd := exec.Command(goBinPath, "mod", "init", strings.ReplaceAll(fname, ".go", ""))
+	//Warn about usage if garble is chosen over go compiler.
+	if Garble {
+		fmt.Println("Using garble to compile. Ensure garble is in your PATH and is the correct version for your go installation.")
+	} else {
+		fmt.Println("Using go for executable. Ensure go is in your PATH.")
+	}
+	initCmd := exec.Command("go", "mod", "init", strings.ReplaceAll(fname, ".go", ""))
 	initCmd.Env = Env
 
 	initCmd.Stdout = &out
@@ -87,7 +96,7 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 	initCmd.Wait()
 	//go mod tidy to get depencies
-	tidyCmd := exec.Command(goBinPath, "mod", "tidy")
+	tidyCmd := exec.Command("go", "mod", "tidy")
 	tidyCmd.Env = Env
 	tidyCmd.Stdout = &out
 	tidyCmd.Stderr = &stderr
@@ -100,7 +109,7 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 	tidyCmd.Wait()
 
-	getWinmod := exec.Command(goBinPath, "get", "golang.org/x/sys/windows")
+	getWinmod := exec.Command("go", "get", "golang.org/x/sys/windows")
 	getWinmod.Env = Env
 	getWinmod.Stdout = &out
 	getWinmod.Stderr = &stderr
@@ -110,33 +119,8 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 		color.Red(fmt.Sprint(err) + ": " + stderr.String())
 		return err
 	}
-	getSalmod := exec.Command(goBinPath, "get", "github.com/epictetus24/go-util/pkg/box")
-	getSalmod.Env = Env
-	getSalmod.Stdout = &out
-	getSalmod.Stderr = &stderr
-	err = getSalmod.Run()
-	if err != nil {
-		color.Red("[gengo] Woops, something went wrong with go mod tidy:\n")
-		color.Red(fmt.Sprint(err) + ": " + stderr.String())
-		return err
-	}
-
-	if dll {
-		Env = append(Env, fmt.Sprintf("CGO_ENABLED=%s", "1"))
-		command = []string{"build", "-o", outname + ".dll", "-trimpath", "-buildmode=c-shared", `-ldflags="-w -s -H=windowsgui"`, fname}
-	} else {
-		Env = append(Env, fmt.Sprintf("CGO_ENABLED=%s", "0"))
-		command = []string{"build", "-o", outname + ".exe", "-trimpath", `-ldflags="-w -s -H=windowsgui"`, fname}
-	}
-
-	buildcmd := fmt.Sprintf("GOOS=windows GOARCH=%s go ", Arch) + strings.Join(command, " ")
 
 	color.Green("Prep done! go.mod and go.sum may need updating before compilation.")
-	color.Cyan("This version of GoDropIt does not perform compilation to ensure that the end-user verifies the code.\n")
-	color.Cyan("To compile navigate to %s and run:\n\n", outdir)
-	fmt.Printf("%s\n\n", buildcmd)
-
-	color.Cyan("Or if you're really cool use garble: https://github.com/burrowers/garble")
 
 	return nil
 
@@ -144,8 +128,15 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 // Compiles the resulting go file into the appropriate format.
 func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
+
 	var command []string
 	var err error
+
+	if Garble {
+		compilerBin = "garble"
+	} else {
+		compilerBin = "go"
+	}
 
 	err = os.Chdir(outdir)
 	if err != nil {
@@ -160,23 +151,38 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 	var stderr bytes.Buffer
 	outname := fmt.Sprintf("%s_%s", strings.ReplaceAll(fname, ".go", ""), Arch)
 
-	//setup to use dll
-	if dll {
+	//modify args based on compiler and output format:
+	if Garble {
+		if dll {
 
-		outname = outname + ".dll"
-		command = []string{"build", "-x", "-o", outname, "-trimpath", "-buildmode=c-shared", `-ldflags=-w -s -H=windowsgui`, fname}
+			outname = outname + ".dll"
+			command = []string{"-tiny", "-literals", "-seed=random", "build", "-o", outname, "-trimpath", "-buildmode=c-shared", `-ldflags=-w -s -H=windowsgui`, fname}
+		} else {
+			outname = outname + ".exe"
+			command = []string{"-tiny", "-literals", "-seed=random", "build", "-o", outname, "-trimpath", `-ldflags=-w -s -H=windowsgui`, fname}
+		}
+
 	} else {
-		outname = outname + ".exe"
-		command = []string{"build", "-o", outname, "-trimpath", `-ldflags=-w -s -H=windowsgui`, fname}
+		if dll {
+
+			outname = outname + ".dll"
+			command = []string{"build", "-o", outname, "-trimpath", "-buildmode=c-shared", `-ldflags=-w -s -H=windowsgui`, fname}
+		} else {
+			outname = outname + ".exe"
+			command = []string{"build", "-o", outname, "-trimpath", `-ldflags=-w -s -H=windowsgui`, fname}
+		}
 	}
 
-	cmd := exec.Command(goBinPath, command...)
+	cmd := exec.Command(compilerBin, command...)
 	cmd.Env = Env
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
 	if dll {
 		cmd.Env[0] = fmt.Sprintf("CC=%s", "x86_64-w64-mingw32-gcc")
 		cmd.Env[1] = fmt.Sprintf("CGO_ENABLED=%s", "1")
+	}
+	if Debug {
+		PrintBuild(cmd.Env[0], cmd.Env[1], compilerBin, command, outdir)
 	}
 
 	err = cmd.Run()
@@ -187,13 +193,27 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 	}
 
 	cmd.Wait()
-
-	color.Green("Dropper compiled with regular normal go compiler, find it at %s/%s.\n", outdir, outname)
+	if Garble {
+		color.Green("Dropper compiled with Garble compiler, find it at %s/%s.\n", outdir, outname)
+	} else {
+		color.Green("Dropper compiled with regular go compiler, find it at %s/%s.\n", outdir, outname)
+	}
 
 	return true, nil
 
 }
 
+func PrintBuild(cc, cgo, compileBin string, args []string, outdir string) {
+
+	buildcmd := fmt.Sprintf("%s %s %s %s\n", cc, cgo, compileBin, strings.Join(args[:], " "))
+
+	color.Cyan("To compile yourself, navigate to %s and run:\n\n", outdir)
+	fmt.Printf("%s\n\n", buildcmd)
+	if !Garble {
+		color.Cyan("Or if you're really cool use garble: https://github.com/burrowers/garble")
+	}
+
+}
 func buildWasm(outdir, fname string) error {
 	Arch = "wasm"
 

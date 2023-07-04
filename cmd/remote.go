@@ -25,6 +25,7 @@ var remoteCmd = &cobra.Command{
 		var remoteDrop gengo.Dropper
 		var Dtype gengo.DtypeRemote
 		var err error
+		gengo.Garble = garble
 
 		Dtype.Args = procArgs
 		Dtype.Pid = pid

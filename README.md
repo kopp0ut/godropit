@@ -56,7 +56,7 @@ go build -trimpath -ldflags="-w -s" -o godropit main.go
 # Usage
 [Example Usage](https://asciinema.org/a/Trd0aKJuNVbB6j4jPssbiYDuh)
 
-Once downloaded it's fairly simple, you can either compile the binary and run it that way, or use it with "go run". Right now it only accepts baked in templates, but it will output the src to "-o /full/path/to/outputdir". This is where all the go source files will be placed, including encrypted shellcode, env variables used and go.mod/go.sum etc. 
+Once downloaded it's fairly simple, you can either compile the binary and run it that way, or use it with "go run". Right now it only accepts baked in templates, but it will output the src to "-o /full/path/to/outputdir". This is where all the go source files will be placed, including encrypted shellcode, env variables used and go.mod/go.sum etc. Use flag --debug to keep these files after compilation, else godropit will tidy these away. 
 
 **WARNING** Do not output to the godropit directory, doing so will break the droppers and they will NOT generate, because go will try to build godropit and your bin in one go. 
 
