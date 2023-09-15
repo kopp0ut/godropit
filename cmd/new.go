@@ -21,8 +21,6 @@ var ua string
 var garble bool
 var shared bool
 var arch bool
-var initex bool
-var batch bool
 var time int
 
 const sgn = false
@@ -67,7 +65,6 @@ func init() {
 	newCmd.PersistentFlags().BoolVarP(&shared, "shared", "s", false, "Export dropper as DLL. Default is false")
 	newCmd.PersistentFlags().BoolVar(&arch, "32", false, "Attempts to generate an x86 dropper, completely untested. Use at own risk.")
 	newCmd.PersistentFlags().BoolVar(&garble, "garble", false, "Builds the dropper using garble.")
-	newCmd.PersistentFlags().BoolVar(&batch, "batch", false, "[experimental] Builds all possible injection methods for dropper type.")
 
 	//Stager commands for all droppers.
 	newCmd.PersistentFlags().StringVarP(&stagerurl, "url", "u", "", "URL to use for a staged payload. E.g. https://evil.com/test.png. Setting this flag will make the payload staged.")
