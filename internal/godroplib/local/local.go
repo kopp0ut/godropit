@@ -1,7 +1,7 @@
 package local
 
 import (
-	"godropit/pkg/dropfmt"
+	"github.com/kopp0ut/godropit/pkg/dropfmt"
 )
 
 var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA"}

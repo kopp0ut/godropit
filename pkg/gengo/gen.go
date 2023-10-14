@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"godropit/pkg/box"
-	"godropit/pkg/dropfmt"
+	"github.com/kopp0ut/godropit/pkg/box"
+	"github.com/kopp0ut/godropit/pkg/dropfmt"
 
 	"github.com/fatih/color"
 )

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
-	"github.com/epictetus24/go-util/pkg/enc"
+	"github.com/kopp0ut/go-util/pkg/enc"
 )
 
 // Struct for Handling Encrypted Shellcode

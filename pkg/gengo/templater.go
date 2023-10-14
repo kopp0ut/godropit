@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/template"
 
-	"godropit/pkg/delivery"
+	"github.com/kopp0ut/godropit/pkg/delivery"
 )
 
 // Add in specific funcs for new dropper type.

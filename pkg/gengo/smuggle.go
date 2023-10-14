@@ -2,10 +2,11 @@ package gengo
 
 import (
 	"fmt"
-	"godropit/pkg/dropfmt"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/kopp0ut/godropit/pkg/dropfmt"
 
 	"github.com/fatih/color"
 )

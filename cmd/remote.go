@@ -3,8 +3,8 @@ package cmd
 import (
 	"log"
 
-	"godropit/internal/godroplib/remote"
-	"godropit/pkg/gengo"
+	"github.com/kopp0ut/godropit/internal/godroplib/remote"
+	"github.com/kopp0ut/godropit/pkg/gengo"
 
 	"github.com/spf13/cobra"
 )

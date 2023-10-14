@@ -3,7 +3,7 @@ package box
 import (
 	"encoding/base64"
 
-	"github.com/epictetus24/go-util/pkg/enc"
+	"github.com/kopp0ut/go-util/pkg/enc"
 )
 
 // Decrypt AES Buffer

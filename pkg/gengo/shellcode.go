@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"godropit/pkg/dropfmt"
+	"github.com/kopp0ut/godropit/pkg/dropfmt"
 
 	"github.com/Binject/go-donut/donut"
 	"github.com/fatih/color"

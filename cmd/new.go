@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"godropit/pkg/gengo"
 	"os"
 	"strings"
+
+	"github.com/kopp0ut/godropit/pkg/gengo"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

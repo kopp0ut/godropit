@@ -6,8 +6,8 @@ package cmd
 import (
 	"log"
 
-	"godropit/internal/godroplib/local"
-	"godropit/pkg/gengo"
+	"github.com/kopp0ut/godropit/internal/godroplib/local"
+	"github.com/kopp0ut/godropit/pkg/gengo"
 
 	"github.com/spf13/cobra"
 )

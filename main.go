@@ -1,7 +1,7 @@
 package main
 
 import (
-	"godropit/cmd"
+	"github.com/kopp0ut/godropit/cmd"
 )
 
 func main() {

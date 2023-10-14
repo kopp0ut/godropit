@@ -1,7 +1,7 @@
 package child
 
 import (
-	"godropit/pkg/dropfmt"
+	"github.com/kopp0ut/godropit/pkg/dropfmt"
 )
 
 var Droppers = []string{"CreateProcess", "CreateProcessWithPipe", "EarlyBird"}

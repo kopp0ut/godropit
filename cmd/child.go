@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"godropit/internal/godroplib/child"
-	"godropit/pkg/gengo"
 	"log"
+
+	"github.com/kopp0ut/godropit/internal/godroplib/child"
+	"github.com/kopp0ut/godropit/pkg/gengo"
 
 	"github.com/spf13/cobra"
 )
