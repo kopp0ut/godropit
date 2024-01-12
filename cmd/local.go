@@ -52,6 +52,7 @@ var localCmd = &cobra.Command{
 
 		if len(methods) >= 1 {
 			for i := range methods {
+				localDrop.Debug = true
 				method := methods[i]
 				localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal(strings.ToLower(method))
 				methodname := name + "_" + method

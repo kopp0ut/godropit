@@ -54,6 +54,7 @@ var remoteCmd = &cobra.Command{
 
 		if len(methods) >= 1 {
 			for i := range methods {
+				remoteDrop.Debug = true
 				method := methods[i]
 				remoteDrop.Dlls, remoteDrop.Inject, remoteDrop.Import, remoteDrop.Extra = remote.SelectRemote(strings.ToLower(method))
 				methodname := name + "_" + method

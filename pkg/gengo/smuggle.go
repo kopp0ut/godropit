@@ -87,8 +87,6 @@ func NewSmuggler(dropname, input, output, url, image, host, useragent string) {
 		color.Green("Smuggler src written to: %s\n", dropFilepath)
 	}
 
-	wd, _ := os.Getwd()
-
 	//compile the dropper with the regular go compiler.
 
 	buildWasm(output, dropfilename)
@@ -120,7 +118,5 @@ func NewSmuggler(dropname, input, output, url, image, host, useragent string) {
 	PrintTemplateStr(filename, htmlExample)
 
 	fmt.Printf("\nThe wasm-exec.js can be found in your go bin path.\nThis is usually: $(go env GOROOT)/misc/wasm/wasm_exec.js \n\nConsider using tinygo if your wasm files are large.")
-
-	os.Chdir(wd)
 
 }

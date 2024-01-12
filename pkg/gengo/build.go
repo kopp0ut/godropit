@@ -44,7 +44,6 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 	var err error
 
-	err = os.Chdir(outdir)
 	if err != nil {
 		log.Fatalf("Error changing to output dir %v.\n", err)
 	}
@@ -85,6 +84,7 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 	}
 	initCmd := exec.Command("go", "mod", "init", strings.ReplaceAll(fname, ".go", ""))
 	initCmd.Env = Env
+	//initCmd.Dir = outdir
 
 	initCmd.Stdout = &out
 	initCmd.Stderr = &stderr
@@ -101,6 +101,7 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 	tidyCmd.Env = Env
 	tidyCmd.Stdout = &out
 	tidyCmd.Stderr = &stderr
+	//tidyCmd.Dir = outdir
 	err = tidyCmd.Run()
 	if err != nil {
 		color.Red("[gengo] Woops, something went wrong with go mod tidy:\n")
@@ -139,7 +140,6 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 		compilerBin = "go"
 	}
 
-	err = os.Chdir(outdir)
 	if err != nil {
 		log.Fatalf("Error changing to output dir %v.\n", err)
 	}
@@ -225,7 +225,6 @@ func buildWasm(outdir, fname string) error {
 	var command []string
 	var err error
 
-	err = os.Chdir(outdir)
 	if err != nil {
 		log.Fatalf("Error changing to output dir %v.\n", err)
 	}
@@ -258,6 +257,7 @@ func buildWasm(outdir, fname string) error {
 
 	initCmd.Stdout = &out
 	initCmd.Stderr = &stderr
+	initCmd.Dir = outdir
 	err = initCmd.Run()
 	if err != nil {
 		color.Red("[gengo] Woops, something went wrong with go mod init, soz.\n")
@@ -271,6 +271,7 @@ func buildWasm(outdir, fname string) error {
 	tidyCmd.Env = Env
 	tidyCmd.Stdout = &out
 	tidyCmd.Stderr = &stderr
+	tidyCmd.Dir = outdir
 	err = tidyCmd.Run()
 	if err != nil {
 		color.Red("[gengo] Woops, something went wrong with go mod tidy:\n")
@@ -280,7 +281,6 @@ func buildWasm(outdir, fname string) error {
 
 	tidyCmd.Wait()
 
-	err = os.Chdir(outdir)
 	if err != nil {
 		log.Fatalf("Error changing to output dir %v.\n", err)
 	}

@@ -57,6 +57,7 @@ var childCmd = &cobra.Command{
 
 		if len(methods) >= 1 {
 			for i := range methods {
+				childDrop.Debug = true
 				method := methods[i]
 				childDrop.Dlls, childDrop.Inject, childDrop.Import = child.SelectChild(strings.ToLower(method))
 				methodname := name + "_" + method

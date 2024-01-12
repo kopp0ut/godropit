@@ -132,8 +132,6 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output string) {
 
 	}
 
-	wd, _ := os.Getwd()
-
 	//compile the dropper with the regular go compiler.
 
 	buildFileGo(outpath, dropfilename, goDrop.Shared, goDrop.Arch)
@@ -157,7 +155,5 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output string) {
 			log.Print(err)
 		}
 	}
-
-	os.Chdir(wd)
 
 }
