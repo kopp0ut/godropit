@@ -1,6 +1,9 @@
 package remote
 
 import (
+	"log"
+	"strings"
+
 	"github.com/kopp0ut/godropit/pkg/dropfmt"
 )
 
@@ -29,23 +32,25 @@ type RemoteDropper struct {
 var FuncName = "SystemFunction_032"
 var Export = "export"
 
-func SelectRemote() (Dlls, Inject, Import, Extra string) {
+func SelectRemote(selected string) (Dlls, Inject, Import, Extra string) {
 
-	_, selected, _ := dropfmt.PromptList(Droppers, "Select the remote dropper you would like to use:")
+	_, selected, _ = dropfmt.PromptList(Droppers, "Select the remote dropper you would like to use:")
 
-	switch selected {
-	case "CreateRemoteThread":
+	switch strings.ToLower(selected) {
+	case "createremotethread":
 		Dlls = CreateRemoteThreadDlls
 		Inject = CreateRemoteThread
 		Import = CreateRemoteThreadImports
-	case "CreateRemoteThreadNative":
+	case "createremotethreadnative":
 		Dlls = CreateRemoteThreadNativeDlls
 		Inject = CreateRemoteThreadNative
 		Import = CreateRemoteThreadNativeImports
-	case "RtlCreateUserThread":
+	case "rtlcreateuserthread":
 		Dlls = RtlCreateUserThreadDlls
 		Inject = RtlCreateUserThread
 		Import = RtlCreateUserThreadImports
+	default:
+		log.Fatalf("Error: Method '%s' not found.\nPlease use one of the following remote methods: %v\n", selected, Droppers)
 	}
 
 	return Dlls, Inject, Import, Extra

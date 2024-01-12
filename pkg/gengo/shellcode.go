@@ -89,7 +89,7 @@ func GetShellcode(input string) dropfmt.DropFmt {
 		return dropper
 
 	} else {
-		shellcode, errShellcode = ioutil.ReadFile(input)
+		shellcode, errShellcode = os.ReadFile(input)
 
 		if errShellcode != nil {
 			color.Red(fmt.Sprintf("[!]%s", errShellcode.Error()))

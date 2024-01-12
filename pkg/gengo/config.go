@@ -1,7 +1,6 @@
 package gengo
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -32,7 +31,7 @@ func GoGetEnv() {
 
 func ReadEnv(envar string) string {
 
-	data, err := ioutil.ReadFile("./goenv.txt")
+	data, err := os.ReadFile("./goenv.txt")
 	if err != nil {
 		color.Red("Could not read goenv.txt, compilation may fail.")
 	}

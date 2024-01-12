@@ -1,7 +1,5 @@
 package gengo
 
-var Leet bool
-
 // Contains all the elements necessary for a dropper template
 type Dropper struct {
 
@@ -82,7 +80,7 @@ type DtypeRemote struct {
 	Args       string
 }
 
-const DropperMain = `package main
+const GoDropperMain = `package main
 
 {{.C}}
 

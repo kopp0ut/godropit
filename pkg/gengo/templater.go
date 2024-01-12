@@ -43,8 +43,8 @@ func GenDTypeChild(cd DtypeChild) (string, error) {
 
 }
 
-func (d *Dropper) writeFinalTemplate(writer io.Writer) error {
-	tmpl, err := template.New("newDropper").Parse(DropperMain)
+func (d *Dropper) writeFinalGoTemplate(writer io.Writer) error {
+	tmpl, err := template.New("newDropper").Parse(GoDropperMain)
 	if err != nil {
 		return err
 	}

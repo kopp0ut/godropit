@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/kopp0ut/godropit/pkg/gengo"
 
@@ -22,7 +21,9 @@ var ua string
 var garble bool
 var shared bool
 var arch bool
-var time int
+var timer int
+var prestamp bool
+var methods []string
 
 const sgn = false
 
@@ -61,11 +62,13 @@ func init() {
 	newCmd.MarkFlagRequired("out")
 
 	//optional commands for all droppers.
-	newCmd.PersistentFlags().IntVarP(&time, "time", "t", 1, "delay in seconds before decryption and execution of shellcode.")
+	newCmd.PersistentFlags().IntVarP(&timer, "time", "t", 1, "delay in seconds before decryption and execution of shellcode.")
 	newCmd.PersistentFlags().StringVarP(&domain, "domain", "d", "", "")
+	newCmd.PersistentFlags().StringSliceVarP(&methods, "methods", "m", []string{""}, "Comma separated list of injection methods to use. e.g. -m CreateRemoteThread,NtCreateThreadEx.")
 	newCmd.PersistentFlags().BoolVarP(&shared, "shared", "s", false, "Export dropper as DLL. Default is false")
 	newCmd.PersistentFlags().BoolVar(&arch, "32", false, "Attempts to generate an x86 dropper, completely untested. Use at own risk.")
 	newCmd.PersistentFlags().BoolVar(&garble, "garble", false, "Builds the dropper using garble.")
+	newCmd.PersistentFlags().BoolVar(&prestamp, "timestamp", false, "Prepends timestamp to dropper files, handy to for version control")
 
 	//Stager commands for all droppers.
 	newCmd.PersistentFlags().StringVarP(&stagerurl, "url", "u", "", "URL to use for a staged payload. E.g. https://evil.com/test.png. Setting this flag will make the payload staged.")
@@ -75,14 +78,4 @@ func init() {
 
 	//newCmd.PersistentFlags().BoolVar(&sgn, "SGN", false, "Uses nextgen shikata ga nai to encode the shellcode.")
 
-}
-
-func check(name string) string {
-	if strings.Contains(name, "hunter2") {
-		name = strings.ReplaceAll(name, "hunter2", "")
-		gengo.Leet = true
-		color.Blue("[!] 1337 Mode unlocked.")
-		return name
-	}
-	return name
 }

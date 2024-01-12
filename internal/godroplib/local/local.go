@@ -1,12 +1,13 @@
 package local
 
 import (
+	"log"
+	"strings"
+
 	"github.com/kopp0ut/godropit/pkg/dropfmt"
 )
 
-var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA"}
-
-var LeetDroppers = []string{"[HellsGate] BananaPhone", "[Callback] EnumerateChildWindows", "[Callback] EnumerateLoadedModules", "[Callback] CreateThreadPoolWait"}
+var Droppers = []string{"CreateFiber", "CreateThread", "CreateThreadNative", "EtwpCreateETWThread", "NtQueueAPCThreadExLocal", "goSyscall", "UUIDFromStringA", "BananaPhone", "EnumerateChildWindows", "EnumerateLoadedModules", "CreateThreadPoolWait"}
 
 var Hold = `
 	for {
@@ -14,67 +15,67 @@ var Hold = `
 	}
 `
 
-func SelectLocal(leet bool) (Dlls, Inject, Import, Extra string) {
-	if leet {
-		Droppers = append(Droppers, LeetDroppers...)
-	}
-	_, selected, _ := dropfmt.PromptList(Droppers, "Select the local dropper you would like to use:")
+func SelectLocal(selected string) (Dlls, Inject, Import, Extra string) {
 
-	switch selected {
-	case "CreateFiber":
+	_, selected, _ = dropfmt.PromptList(Droppers, "Select the local dropper you would like to use:")
+
+	switch strings.ToLower(selected) {
+	case "createfiber":
 		Dlls = CreateFiberDlls
 		Inject = CreateFiber
 		Import = CreateFiberImports
-	case "CreateThread":
+		Extra = ""
+	case "createthread":
 		Dlls = CreateThreadDlls
 		Inject = CreateThread
 		Import = CreateThreadImports
-	case "CreateThreadNative":
+		Extra = ""
+	case "createthreadnative":
 		Dlls = CreateThreadNativeDlls
 		Inject = CreateThreadNative
 		Import = CreateThreadNativeImports
-	case "EtwpCreateETWThread":
+		Extra = ""
+	case "etwpcreateetwthread":
 		Dlls = EtwpCreateETWThreadDlls
 		Inject = EtwpCreateETWThread
 		Import = EtwpCreateETWThreadImports
-	case "NtQueueAPCThreadExLocal":
+		Extra = ""
+	case "ntqueueapcthreadexlocal":
 		Dlls = NtQueueAPCThreadExLocalDlls
 		Inject = NtQueueAPCThreadExLocal
 		Import = NtQueueAPCThreadExLocalImports
 		Extra = NtQueueAPCThreadExLocalExtra
-	case "goSyscall":
+	case "gosyscall":
 		Dlls = goSyscallDlls
 		Inject = goSyscall
 		Import = goSyscallImports
-	case "UUIDFromStringA":
+	case "uuidfromstringa":
 		Dlls = UUIDFromStringADlls
 		Inject = UUIDFromStringA
 		Import = UUIDFromStringAImports
 		Extra = UUIDFromStringAExtra
-
-	case "[HellsGate] BananaPhone":
+	case "bananaphone":
 		Dlls = BananaPhoneDlls
 		Inject = BananaPhone
 		Import = BananaPhoneImports
 		Extra = BananaPhoneExtra
-
-	case "[Callback] EnumerateChildWindows":
+	case "enumeratechildwindows":
 		Dlls = EnumChildWindowsDlls
 		Inject = EnumChildWindows
 		Import = EnumChildWindowsImports
 		Extra = ""
-
-	case "[Callback] EnumerateLoadedModules":
+	case "enumerateloadedmodules":
 		Dlls = EnumerateLoadedModulesDlls
 		Inject = EnumerateLoadedModules
 		Import = EnumerateLoadedModulesImports
 		Extra = ""
-
-	case "[Callback] CreateThreadPoolWait":
+	case "createthreadpoolwait":
 		Dlls = CreateThreadPoolWaitDlls
 		Inject = CreateThreadPoolWait
 		Import = CreateThreadPoolWaitImports
-		Extra = "//notreq"
+		Extra = ""
+	default:
+		log.Fatalf("Error: Method '%s' not found.\nPlease use one of the following local methods: %v\n", selected, Droppers)
 
 	}
 
