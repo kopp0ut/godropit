@@ -1,28 +1,36 @@
 package child
 
 import (
+	"log"
+	"strings"
+
 	"github.com/kopp0ut/godropit/pkg/dropfmt"
 )
 
 var Droppers = []string{"CreateProcess", "CreateProcessWithPipe", "EarlyBird"}
 
-func SelectChild() (Dlls, Inject, Import string) {
+func SelectChild(selected string) (Dlls, Inject, Import string) {
 
-	_, selected, _ := dropfmt.PromptList(Droppers, "Select the child dropper you would like to use:")
+	if selected == "" {
+		_, selected, _ = dropfmt.PromptList(Droppers, "Select the child dropper you would like to use:")
+	}
 
-	switch selected {
-	case "CreateProcess":
+	switch strings.ToLower(selected) {
+	case "createprocess":
 		Dlls = CreateProcessDlls
 		Inject = CreateProcess
 		Import = CreateProcessImports
-	case "CreateProcessWithPipe":
+	case "createprocesswithpipe":
 		Dlls = CreateProcWithPipeDlls
 		Inject = CreateProcWithPipe
 		Import = CreateProcWithPipeImports
-	case "EarlyBird":
+	case "earlybird":
 		Dlls = EarlyBirdDlls
 		Inject = EarlyBird
 		Import = EarlyBirdImports
+	default:
+		log.Fatalf("Error: Method '%s' not found.\nPlease use one of the following child methods: %v\n", selected, Droppers)
+
 	}
 
 	return Dlls, Inject, Import

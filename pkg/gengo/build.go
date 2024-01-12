@@ -72,6 +72,7 @@ func buildInstruct(outdir, fname string, dll bool, x86 bool) error {
 
 	Env = append(Env, fmt.Sprintf("GOARCH=%s", Arch))
 	Env = append(Env, fmt.Sprintf("GOOS=%s", "windows"))
+	Env = append(Env, fmt.Sprintf("GOTMPDIR=%s", outdir))
 
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -175,6 +176,7 @@ func buildFileGo(outdir, fname string, dll bool, x86 bool) (bool, error) {
 
 	cmd := exec.Command(compilerBin, command...)
 	cmd.Env = Env
+	cmd.Dir = outdir
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
 	if dll {
@@ -294,6 +296,7 @@ func buildWasm(outdir, fname string) error {
 
 	cmd := exec.Command(goBinPath, command...)
 	cmd.Env = Env
+	cmd.Dir = outdir
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
 
