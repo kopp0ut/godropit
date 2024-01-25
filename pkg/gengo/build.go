@@ -26,11 +26,12 @@ func init() {
 	Env = []string{
 		fmt.Sprintf("CC=%s", ReadEnv("CC")),
 		fmt.Sprintf("CGO_ENABLED=%s", "0"),
-		fmt.Sprintf("GOCACHE=%s", ReadEnv("GOCACHE")),
-		fmt.Sprintf("GOMODCACHE=%s", ReadEnv("GOMODCACHE")),
+		//fmt.Sprintf("GOCACHE=%s", ReadEnv("GOCACHE")),
+		//fmt.Sprintf("GOMODCACHE=%s", ReadEnv("GOMODCACHE")),
 		fmt.Sprintf("GOPRIVATE=%s", ReadEnv("GOPRIVATE")),
 		fmt.Sprintf("PATH=%s:%s", path.Join(ReadEnv("GOVERSION"), "bin"), os.Getenv("PATH")),
-		fmt.Sprintf("GOPATH=%s", ReadEnv("GOPATH")),
+		//fmt.Sprintf("GOPATH=%s", ReadEnv("GOPATH")),
+		//fmt.Sprintf("GOROOT=%s", ReadEnv("GOROOT")),
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 	}
 }
